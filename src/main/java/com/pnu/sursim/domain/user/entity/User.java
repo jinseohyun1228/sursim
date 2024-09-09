@@ -2,6 +2,7 @@ package com.pnu.sursim.domain.user.entity;
 
 import com.pnu.sursim.domain.user.dto.JoinRequest;
 import com.pnu.sursim.domain.user.dto.ProfileRequest;
+import com.pnu.sursim.global.auth.dto.KakaoUser;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,6 +55,12 @@ public class User {
         this.name = joinRequest.name();
         this.email = joinRequest.email();
         this.password = joinRequest.password();
+    }
+
+    public User(KakaoUser kakaoUser) {
+        this.name = kakaoUser.nickname();
+        this.email = kakaoUser.email();
+        this.password = kakaoUser.password();
     }
 
     public void updateProfile(ProfileRequest profileRequest) {
