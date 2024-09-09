@@ -12,7 +12,6 @@ import java.util.Date;
 
 @Component
 public class JWTUtil {
-    private static final String BEARER = "Bearer ";
     private final SecretKey secretKey;
 
     public JWTUtil(@Value("${spring.jwt.secret}") String secret) {
@@ -28,7 +27,7 @@ public class JWTUtil {
                 .signWith(secretKey)
                 .compact();
 
-        return BEARER + token;
+        return token;
     }
 
     public boolean validateToken(String token) {

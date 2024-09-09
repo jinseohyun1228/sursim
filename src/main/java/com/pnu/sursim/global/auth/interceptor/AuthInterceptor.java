@@ -4,6 +4,7 @@ import com.pnu.sursim.domain.user.dto.AuthUser;
 import com.pnu.sursim.global.auth.jwt.JWTUtil;
 import com.pnu.sursim.global.exception.CustomException;
 import com.pnu.sursim.global.exception.ErrorCode;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -23,31 +24,33 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
-        String authorization = request.getHeader("Authorization");
-        if (authorization == null || !authorization.startsWith(BEARER)) {
-            response.sendRedirect("/page/loin");
+
+        String authorization = null;
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+            response.sendRedirect("/api/login/kakao");
             throw new CustomException(ErrorCode.TOKEN_EMPTY);
         }
-        String token = authorization.split(" ")[1];
-
-
-        if (token == null) {
-            response.sendRedirect("/page/loin");
-            throw new CustomException(ErrorCode.TOKEN_EMPTY);
-
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("Authorization")) {
+                authorization = cookie.getValue();
+            }
         }
 
-        if (!jwtUtil.validateToken(token)) {
-            response.sendRedirect("/page/loin");
+        if (authorization == null) {
+            response.sendRedirect("/api/login/kakao");
             throw new CustomException(ErrorCode.TOKEN_EXPIRED);
         }
+
+        String token = authorization;
 
         AuthUser authUser = new AuthUser(jwtUtil.getName(token), jwtUtil.getEmail(token));
 
         HttpSession session = request.getSession(true);
 
         session.setAttribute("user", authUser);
-
+        System.out.println("authUser = " + authUser);
         return true;
     }
 

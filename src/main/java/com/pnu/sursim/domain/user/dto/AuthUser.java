@@ -12,4 +12,13 @@ public class AuthUser {
         this.name = name;
         this.email = email;
     }
+
+
+    @Override
+    public String toString() {
+        return "AuthUser{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }
