@@ -22,7 +22,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final AuthInterceptor authLoginInterceptor;
 
-
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new SessionUserArgumentResolver());
@@ -31,8 +30,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authLoginInterceptor)
-                .excludePathPatterns("/api/users/login", "/api/users/join", "/api/info/**","/page/loin")
-                .addPathPatterns("/**");
+                .addPathPatterns("/api/user/**")
+                .excludePathPatterns("/api/auth/**", "/api/health");
+
     }
 
     @Override
