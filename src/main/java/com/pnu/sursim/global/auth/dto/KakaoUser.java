@@ -4,19 +4,23 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record KakaoUser(Long id, Properties properties) {
+public record KakaoUser(Long id, Properties properties,KakaoAccount kakaoAccount) {
     public String nickname() {
         return properties().nickname;
     }
 
     public String email() {
-        return id.toString() + properties().nickname;
+        return kakaoAccount().email;
     }
 
     public String password() {
         return "password";
     }
+
+
     record Properties(String nickname) {
     }
 
+    record KakaoAccount(String email) {
+    }
 }
