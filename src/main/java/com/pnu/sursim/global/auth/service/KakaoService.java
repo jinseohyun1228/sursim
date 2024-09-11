@@ -1,7 +1,9 @@
 package com.pnu.sursim.global.auth.service;
 
-import com.pnu.sursim.domain.user.dto.UserVo;
+import com.pnu.sursim.domain.user.dto.AuthUser;
+import com.pnu.sursim.domain.user.dto.KakaoFirstInfo;
 import com.pnu.sursim.domain.user.entity.User;
+import com.pnu.sursim.domain.user.entity.UserInfoStatus;
 import com.pnu.sursim.domain.user.repository.UserRepository;
 import com.pnu.sursim.global.auth.dto.AuthStatus;
 import com.pnu.sursim.global.auth.dto.KakaoToken;
@@ -83,4 +85,14 @@ public class KakaoService {
         return new AuthStatus(jwtToken,savedUser.getUserInfoStatus());
     }
 
+    public UserInfoStatus registerUserInfoFirst(AuthUser authUser, KakaoFirstInfo kakaoFirstInfo) {
+        User targetUser = userRepository.findByEmail(authUser.getEmail())
+                .orElseThrow(()->new CustomException(ErrorCode.USER_ERROR));
+
+        targetUser.registerUserInfoFirst(kakaoFirstInfo.birthDate(), kakaoFirstInfo.gender(), kakaoFirstInfo.region());
+
+        User savedUser = userRepository.save(targetUser);
+
+        return savedUser.getUserInfoStatus();
+    }
 }

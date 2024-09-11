@@ -85,4 +85,11 @@ public class User {
         }
 
     }
+
+    public void registerUserInfoFirst(LocalDate localDate, Gender gender, Region region) {
+        this.birthDate = localDate;
+        this.gender = gender;
+        this.region = region;
+        this.userInfoStatus = UserInfoStatus.fromUser(this);
+    }
 }
