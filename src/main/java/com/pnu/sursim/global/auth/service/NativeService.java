@@ -18,11 +18,13 @@ public class NativeService {
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
 
-    public void joinUser(JoinRequest joinRequest) {
+    public String joinUser(JoinRequest joinRequest) {
         if (userRepository.existsByEmail(joinRequest.email())) {
             throw new CustomException(ErrorCode.EMAIL_EXISTS);
         }
-        userRepository.save(new User(joinRequest));
+        User savedUser = userRepository.save(new User(joinRequest));
+
+        return jwtUtil.createToken(new UserVo(savedUser));
     }
 
     public String loginUser(LoginRequest loginRequest) {
@@ -30,4 +32,5 @@ public class NativeService {
                 .orElseThrow(() -> new CustomException(ErrorCode.LOGIN_ERROR));
         return jwtUtil.createToken(new UserVo(user));
     }
+
 }
