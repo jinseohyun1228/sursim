@@ -3,10 +3,13 @@ package com.pnu.sursim.global.auth.service;
 import com.pnu.sursim.domain.user.dto.UserVo;
 import com.pnu.sursim.domain.user.entity.User;
 import com.pnu.sursim.domain.user.repository.UserRepository;
+import com.pnu.sursim.global.auth.dto.AuthStatus;
 import com.pnu.sursim.global.auth.dto.KakaoToken;
 import com.pnu.sursim.global.auth.dto.KakaoUser;
 import com.pnu.sursim.global.auth.jwt.JWTUtil;
 import com.pnu.sursim.global.auth.properties.KakaoProperties;
+import com.pnu.sursim.global.exception.CustomException;
+import com.pnu.sursim.global.exception.ErrorCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -41,14 +44,14 @@ public class KakaoService {
                 "&response_type=code";
     }
 
-    public String loginKakao(String code) {
+    public KakaoToken retrieveKakaoToken(String code) {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("grant_type", kakaoProperties.authorizationCode());
         map.add("client_id", kakaoProperties.clientId());
         map.add("redirect_uri", kakaoProperties.redirectUri());
         map.add("code", code);
 
-        KakaoToken kakaoToken = restClient.post()
+        return restClient.post()
                 .uri(kakaoProperties.tokenUri())
                 .contentType(FORM_URLENCODED)
                 .body(map)
@@ -56,7 +59,10 @@ public class KakaoService {
                 .toEntity(KakaoToken.class)
                 .getBody();
 
-        assert kakaoToken != null;
+    }
+
+    public AuthStatus loginUserUsingKakaoToken(KakaoToken kakaoToken) {
+
         KakaoUser kakaoUser = restClient.post()
                 .uri(kakaoProperties.userInfoUri())
                 .contentType(FORM_URLENCODED)
@@ -65,16 +71,16 @@ public class KakaoService {
                 .toEntity(KakaoUser.class)
                 .getBody();
 
+        if(kakaoUser == null){
+            throw new CustomException(ErrorCode.KAKAO_LOGIN_ERROR_NO_USER);
+        };
 
-        assert kakaoUser != null;
         User savedUser = userRepository.findByEmail(kakaoUser.email())
-                //해당 값이 null일때만
                 .orElseGet(()->userRepository.save(new User(kakaoUser)));
 
+        String jwtToken = jwtUtil.createToken(savedUser.getName(), savedUser.getEmail());
 
-        String token = jwtUtil.createToken(new UserVo(savedUser));
-        System.out.println("token = " + token);
-
-        return token;
+        return new AuthStatus(jwtToken,savedUser.getUserInfoStatus());
     }
+
 }
