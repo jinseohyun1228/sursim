@@ -1,5 +1,8 @@
 package com.pnu.sursim.domain.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum Region {
     // 광역시
     SEOUL("서울특별시"),
@@ -29,6 +32,24 @@ public enum Region {
     }
 
     public String getKoreanName() {
+        return koreanName;
+    }
+
+
+    // JSON으로부터 한글 이름을 매핑
+    @JsonCreator
+    public static Region fromKoreanName(String koreanName) {
+        for (Region region : Region.values()) {
+            if (region.koreanName.equals(koreanName)) {
+                return region;
+            }
+        }
+        throw new IllegalArgumentException("Invalid region name: " + koreanName);
+    }
+
+    // JSON 출력 시 한글 이름으로 출력
+    @JsonValue
+    public String toKoreanName() {
         return koreanName;
     }
 }

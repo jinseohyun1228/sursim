@@ -20,7 +20,6 @@ public class UserVo {
     private LocalDate birthDate;
     private Gender gender;
     private Region region;
-    private String imageUrl;
 
     public UserVo(User user) {
         this.id = user.getId();
@@ -30,7 +29,6 @@ public class UserVo {
         this.birthDate = user.getBirthDate();
         this.gender = user.getGender();
         this.region = user.getRegion();
-        this.imageUrl = user.getImageUrl();
     }
 
 }
