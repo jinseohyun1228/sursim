@@ -1,3 +1,4 @@
+---
 name: Issue Template
 about: A template for creating new issues
 title: "[ISSUE]"
