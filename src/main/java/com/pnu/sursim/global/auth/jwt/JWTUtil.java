@@ -30,6 +30,20 @@ public class JWTUtil {
         return token;
     }
 
+
+
+    public String createToken(String name,String email) {
+        String token = Jwts.builder()
+                .claim("name", name)
+                .claim("email", email)
+                .issuedAt(new Date(System.currentTimeMillis())) // 토큰 발생시간
+                .setExpiration(new Date(System.currentTimeMillis() + 2400000L)) // 소멸시간 셋팅
+                .signWith(secretKey)
+                .compact();
+
+        return token;
+    }
+
     public boolean validateToken(String token) {
         return !isExpired(token);
 
