@@ -1,9 +1,8 @@
 package com.pnu.sursim.domain.user.entity;
 
-public enum Gender {
+public enum Gender{
     FEMALE("여성"),
-    MALE("남성"),
-    NOT_SPECIFIED("공개하지 않음");
+    MALE("남성"),;
 
     private final String koreanName;
 
