@@ -43,24 +43,24 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Region region;
 
-    //프로필 사진
-    @Column(name = "image_url")
-    private String imageUrl;
-
-//    @Enumerated(EnumType.STRING)
-//    private Role role;
-
+    @Enumerated(EnumType.STRING)
+    private UserInfoStatus userInfoStatus;
 
     public User(JoinRequest joinRequest) {
         this.name = joinRequest.name();
         this.email = joinRequest.email();
         this.password = joinRequest.password();
+        this.birthDate = joinRequest.birthDate();
+        this.gender = joinRequest.gender();
+        this.region = joinRequest.region();
+        this.userInfoStatus = UserInfoStatus.fromUser(this);
     }
 
     public User(KakaoUser kakaoUser) {
         this.name = kakaoUser.nickname();
         this.email = kakaoUser.email();
         this.password = kakaoUser.password();
+        this.userInfoStatus = UserInfoStatus.fromUser(this);
     }
 
     public void updateProfile(ProfileRequest profileRequest) {
@@ -82,11 +82,6 @@ public class User {
         // 지역 업데이트
         if (profileRequest.existRegion()) {
             this.region = profileRequest.region();
-        }
-
-        // 이미지 URL 업데이트
-        if (profileRequest.existImageUrl()) {
-            this.imageUrl = profileRequest.imageUrl();
         }
 
     }
