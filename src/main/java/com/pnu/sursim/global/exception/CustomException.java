@@ -14,6 +14,11 @@ public class CustomException extends RuntimeException{
 
     }
 
+    public CustomException(Exception e) {
+        super(e.getMessage());
+        this.httpStatus = HttpStatus.BAD_REQUEST;
+
+    }
     @Override
     public String getMessage() {
         return super.getMessage();
