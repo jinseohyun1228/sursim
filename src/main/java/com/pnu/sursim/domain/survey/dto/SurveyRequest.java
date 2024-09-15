@@ -13,5 +13,6 @@ public record SurveyRequest(
         LocalDate dueDate,
         LocalDate startDate,
         PublicAccess publicAccess,
-        List<QuestionRequest> questionRequestList) {
+        int points,
+        List<QuestionRequest> questionList) {
 }
