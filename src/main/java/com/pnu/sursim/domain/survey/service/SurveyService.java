@@ -38,7 +38,7 @@ public class SurveyService {
         Survey savedSurvey = surveyRepository.save(SurveyFactory.makeSurvey(surveyRequest, creator));
 
         //문항을 만드는 부분
-        List<Question> questions = surveyRequest.questionRequestList().stream()
+        List<Question> questions = surveyRequest.questionList().stream()
                 .map(questionRequest -> {
                     // Question 객체 생성 & 데이터베이스에 Question 저장
                     Question savedQuestion = questionRepository.save(SurveyFactory.makeQuestion(questionRequest, savedSurvey));
@@ -53,7 +53,7 @@ public class SurveyService {
 
                     if (savedQuestion.getQuestionType() == QuestionType.LIKERT_SCORES) {
                         // 의미 분별 척도인 경우
-                        SemanticOption semanticOption = semanticOptionRepository.save(SurveyFactory.makeSemantic(questionRequest.semanticOptionRequest(),savedQuestion));
+                        SemanticOption semanticOption = semanticOptionRepository.save(SurveyFactory.makeSemantic(questionRequest.semanticOption(),savedQuestion));
 
                     }
 
