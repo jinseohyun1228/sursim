@@ -42,14 +42,14 @@ public class SurveyFactory {
                 .text(questionRequest.text())
                 .questionType(questionRequest.questionType())
                 .requiredOption(questionRequest.requiredOption())
-                .index(questionRequest.number())
+                .index(questionRequest.index())
                 .survey(survey)
                 .build();
     }
 
     public static QuestionOption makeOption(QuestionOptionRequest questionOptionRequest, Question question) {
         return QuestionOption.builder()
-                .index(questionOptionRequest.number())
+                .index(questionOptionRequest.index())
                 .text(questionOptionRequest.text())
                 .question(question)
                 .build();

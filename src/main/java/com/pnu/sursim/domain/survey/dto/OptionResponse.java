@@ -4,5 +4,5 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record OptionResponse(Long id, int number,String text){
+public record OptionResponse(Long id, int index, String text){
 }
