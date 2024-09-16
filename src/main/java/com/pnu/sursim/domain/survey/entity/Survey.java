@@ -6,16 +6,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+@Builder
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Survey {
 
     @Id
@@ -25,6 +26,9 @@ public class Survey {
     @ManyToOne
     @JoinColumn(name = "users_id")
     private User creator;
+
+    //설문 제목
+    private String title;
 
     //시작날짜
     private LocalDate startDate;
@@ -48,16 +52,8 @@ public class Survey {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Builder
-    public Survey(User creator, LocalDate startDate, LocalDate dueDate, int minAge, int maxAge, PublicAccess publicAccess, int timeRequired, int points, Gender gender) {
-        this.creator = creator;
-        this.startDate = startDate;
-        this.dueDate = dueDate;
-        this.minAge = minAge;
-        this.maxAge = maxAge;
-        this.publicAccess = publicAccess;
-        this.timeRequired = timeRequired;
-        this.points = points;
-        this.gender = gender;
-    }
+    @Builder.Default
+    @OneToMany(mappedBy = "survey")
+    private List<Question> questions= new ArrayList<>();
+
 }
