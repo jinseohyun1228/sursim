@@ -1,16 +1,15 @@
 package com.pnu.sursim.domain.survey.util;
 
-import com.pnu.sursim.domain.survey.dto.QuestionOptionRequest;
-import com.pnu.sursim.domain.survey.dto.QuestionRequest;
-import com.pnu.sursim.domain.survey.dto.SemanticOptionRequest;
-import com.pnu.sursim.domain.survey.dto.SurveyRequest;
+import com.pnu.sursim.domain.survey.dto.*;
 import com.pnu.sursim.domain.survey.entity.Question;
 import com.pnu.sursim.domain.survey.entity.QuestionOption;
 import com.pnu.sursim.domain.survey.entity.SemanticOption;
 import com.pnu.sursim.domain.survey.entity.Survey;
 import com.pnu.sursim.domain.user.entity.User;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.pnu.sursim.domain.survey.util.SurveyRequiredTimeCalculator.calculateRequiredTime;
 
@@ -21,6 +20,7 @@ public class SurveyFactory {
         int maxAge = Optional.ofNullable(surveyRequest.minAge()).orElse(Integer.MAX_VALUE);
 
         return Survey.builder()
+                .title(surveyRequest.title())
                 .creator(creator)
                 .startDate(surveyRequest.startDate())
                 .dueDate(surveyRequest.dueDate())
@@ -45,7 +45,7 @@ public class SurveyFactory {
 
     public static QuestionOption makeOption(QuestionOptionRequest questionOptionRequest, Question question) {
         return QuestionOption.builder()
-                .indexOfCurrentResponse(questionOptionRequest.number())
+                .index(questionOptionRequest.number())
                 .text(questionOptionRequest.text())
                 .question(question)
                 .build();
@@ -58,5 +58,42 @@ public class SurveyFactory {
                 .build();
     }
 
+    public static SurveyResponse makeSurveyResponse(Survey survey, List<QuestionResponse> questionResponses ) {
+        return new SurveyResponse(survey.getTitle(), survey.getStartDate(), survey.getDueDate(), survey.getPublicAccess(), survey.getPoints(),questionResponses);
+    }
 
+
+    public static ChoiceQuestionResponse makeChoiceQuestionResponse(Question question, List<QuestionOption> questionOptions) {
+        return ChoiceQuestionResponse.builder()
+                .optionResponses(questionOptions.stream()
+                        .map(questionOption -> new OptionResponse(questionOption.getId(),questionOption.getIndex(),questionOption.getText()))
+                        .collect(Collectors.toList()))
+                .id(question.getId())
+                .index(question.getIndex())
+                .text(question.getText())
+                .questionType(question.getQuestionType())
+                .requiredOption(question.getRequiredOption())
+                .build();
+    }
+
+    public static SemanticQuestionResponse makeSemanticQuestionResponse(Question question, SemanticOption semanticOption) {
+        return SemanticQuestionResponse.builder()
+                .semanticOption(new SemanticOptionResponse(semanticOption.getLeftEnd(), semanticOption.getRightEnd()))
+                .id(question.getId())
+                .index(question.getIndex())
+                .text(question.getText())
+                .questionType(question.getQuestionType())
+                .requiredOption(question.getRequiredOption())
+                .build();
+    }
+
+    public static QuestionResponse makeQuestionResponse(Question question) {
+        return QuestionResponse.builder()
+                .id(question.getId())
+                .index(question.getIndex())
+                .text(question.getText())
+                .questionType(question.getQuestionType())
+                .requiredOption(question.getRequiredOption())
+                .build();
+    }
 }
