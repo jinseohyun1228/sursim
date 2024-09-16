@@ -10,11 +10,16 @@ import com.pnu.sursim.domain.survey.entity.SemanticOption;
 import com.pnu.sursim.domain.survey.entity.Survey;
 import com.pnu.sursim.domain.user.entity.User;
 
+import java.util.Optional;
+
 import static com.pnu.sursim.domain.survey.util.SurveyRequiredTimeCalculator.calculateRequiredTime;
 
 public class SurveyFactory {
 
     public static Survey makeSurvey(SurveyRequest surveyRequest, User creator) {
+        int minAge = Optional.ofNullable(surveyRequest.minAge()).orElse(0);
+        int maxAge = Optional.ofNullable(surveyRequest.minAge()).orElse(Integer.MAX_VALUE);
+
         return Survey.builder()
                 .creator(creator)
                 .startDate(surveyRequest.startDate())
@@ -22,6 +27,9 @@ public class SurveyFactory {
                 .publicAccess(surveyRequest.publicAccess())
                 .points(surveyRequest.points())
                 .timeRequired(calculateRequiredTime(surveyRequest))
+                .minAge(minAge)
+                .maxAge(maxAge)
+                .gender(surveyRequest.gender())
                 .build();
     }
 
