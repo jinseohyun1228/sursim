@@ -73,12 +73,12 @@ public class SurveyService {
         Page<SurveyResponse> surveyResponsePage = new PageImpl<>(surveys.getContent().stream()
                 .map(survey -> {
                     //서베이의 문항을 적절하게 변환하는 로직
-                    List<QuestionResponse> questionResponses = survey.getQuestions().stream()
-
+                    List<QuestionResponse> questionResponses = questionRepository.findAllBySurveyIdOrderByIndexAsc(survey.getId())
+                            .stream()
                             .map(question -> {
                                 //문항의 타입이 단일/체크 경우 변경
                                 if ((question.getQuestionType() == QuestionType.CHECK_CHOICE) || (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE)) {
-                                    List<QuestionOption> questionOptions = questionOptionRepository.findAllByQuestionId(question.getId());
+                                    List<QuestionOption> questionOptions = questionOptionRepository.findAllByQuestionIdOrderByIndexAsc(question.getId());
                                     if (questionOptions.isEmpty()) {
                                         throw new CustomException(ErrorCode.INCORRECT_CHOICE_QUESTION);
                                     }

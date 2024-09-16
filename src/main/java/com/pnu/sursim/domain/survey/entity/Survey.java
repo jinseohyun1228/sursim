@@ -55,8 +55,4 @@ public class Survey {
     @Enumerated(EnumType.STRING)
     AgeGroup ageGroup;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "survey")
-    private List<Question> questions= new ArrayList<>();
-
 }
