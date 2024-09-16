@@ -20,6 +20,7 @@ public record SurveyResponse(String title,
                              Gender gender,
                              int timeRequired,
                              int points,
-                             List<QuestionResponse> questionList) {
+                             List<QuestionResponse> questionList,
+                             ConsentInfoResponse consentInfo) {
 
 }

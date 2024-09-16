@@ -55,4 +55,8 @@ public class Survey {
     @Enumerated(EnumType.STRING)
     AgeGroup ageGroup;
 
+    private String collectionPurpose;   // 수집 목적
+    private String collectedData;       // 수집 정보
+    private String retentionPeriod;     // 보유 기간
+    private String contactInfo;         // 가능한 연락처
 }

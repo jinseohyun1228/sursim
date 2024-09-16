@@ -18,5 +18,6 @@ public record SurveyRequest(
         PublicAccess publicAccess,
         Gender gender,
         int points,
-        List<QuestionRequest> questionList) {
+        List<QuestionRequest> questionList,
+        ConsentInfoRequest consentInfo) {
 }
