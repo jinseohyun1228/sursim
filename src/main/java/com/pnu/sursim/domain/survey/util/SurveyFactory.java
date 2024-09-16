@@ -55,6 +55,7 @@ public class SurveyFactory {
         return SemanticOption.builder()
                 .leftEnd(semanticOptionRequest.leftEnd())
                 .rightEnd(semanticOptionRequest.rightEnd())
+                .question(question)
                 .build();
     }
 
