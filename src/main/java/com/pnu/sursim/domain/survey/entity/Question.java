@@ -14,10 +14,13 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private QuestionType questionType;
+    //지금 문항번호
+    private int index;
 
     private String text;
+
+    @Enumerated(EnumType.STRING)
+    private QuestionType questionType;
 
     @Enumerated(EnumType.STRING)
     private RequiredOption requiredOption;
@@ -26,7 +29,6 @@ public class Question {
     @JoinColumn(name = "survey_id")
     private Survey survey;
 
-    private int index;
 
     @Builder
     public Question(QuestionType questionType, int index, String text, RequiredOption requiredOption, Survey survey) {
