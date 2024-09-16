@@ -1,10 +1,7 @@
 package com.pnu.sursim.domain.survey.util;
 
 import com.pnu.sursim.domain.survey.dto.*;
-import com.pnu.sursim.domain.survey.entity.Question;
-import com.pnu.sursim.domain.survey.entity.QuestionOption;
-import com.pnu.sursim.domain.survey.entity.SemanticOption;
-import com.pnu.sursim.domain.survey.entity.Survey;
+import com.pnu.sursim.domain.survey.entity.*;
 import com.pnu.sursim.domain.user.entity.User;
 
 import java.util.List;
@@ -16,8 +13,14 @@ import static com.pnu.sursim.domain.survey.util.SurveyRequiredTimeCalculator.cal
 public class SurveyFactory {
 
     public static Survey makeSurvey(SurveyRequest surveyRequest, User creator) {
+        AgeGroup ageGroup = AgeGroup.SPECIFIC;
+
+        if (surveyRequest.minAge()==null && surveyRequest.maxAge() ==null){
+            ageGroup = AgeGroup.ALL;
+        }
+
         int minAge = Optional.ofNullable(surveyRequest.minAge()).orElse(0);
-        int maxAge = Optional.ofNullable(surveyRequest.minAge()).orElse(Integer.MAX_VALUE);
+        int maxAge = Optional.ofNullable(surveyRequest.maxAge()).orElse(Integer.MAX_VALUE);
 
         return Survey.builder()
                 .title(surveyRequest.title())
@@ -30,6 +33,7 @@ public class SurveyFactory {
                 .minAge(minAge)
                 .maxAge(maxAge)
                 .gender(surveyRequest.gender())
+                .ageGroup(ageGroup)
                 .build();
     }
 
@@ -60,7 +64,18 @@ public class SurveyFactory {
     }
 
     public static SurveyResponse makeSurveyResponse(Survey survey, List<QuestionResponse> questionResponses ) {
-        return new SurveyResponse(survey.getTitle(), survey.getStartDate(), survey.getDueDate(), survey.getPublicAccess(), survey.getPoints(),questionResponses);
+        return new SurveyResponse(
+                survey.getTitle(),
+                survey.getStartDate(),
+                survey.getDueDate(),
+                survey.getAgeGroup(),
+                survey.getMinAge(),
+                survey.getMaxAge(),
+                survey.getPublicAccess(),
+                survey.getGender(),
+                survey.getTimeRequired(),
+                survey.getPoints(),
+                questionResponses);
     }
 
 
