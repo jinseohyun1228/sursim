@@ -20,7 +20,9 @@ public enum ErrorCode {
     //회원
     USER_ERROR(HttpStatus.BAD_REQUEST,"There is no member information."),
 
-
+    //설문조사관련응답
+    INCORRECT_CHOICE_QUESTION(HttpStatus.BAD_REQUEST,"An error occurred in the CHOICE_QUESTION. This may be a wrong survey. Please contact the developer."),
+    INCORRECT_SEMANTIC_QUESTIONS(HttpStatus.BAD_REQUEST,"An error occurred in the SEMANTIC_QUESTIONS. This may be a wrong survey. Please contact the developer.")
     ;
 
     private final HttpStatus httpStatus;
