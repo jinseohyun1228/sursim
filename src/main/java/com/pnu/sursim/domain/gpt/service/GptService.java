@@ -35,7 +35,7 @@ public class GptService {
             result = om.readValue(response.getBody(), new TypeReference<>() {
             });
         } catch (Exception e) {
-            throw new CustomException(e);
+            System.out.println("e = " + e);
         }
         return result;
     }
@@ -58,7 +58,7 @@ public class GptService {
             resultMap = om.readValue(response.getBody(), new TypeReference<>() {
             });
         } catch (Exception e) {
-            throw new CustomException(e);
+            System.out.println("e = " + e);
         }
         return resultMap;
     }
