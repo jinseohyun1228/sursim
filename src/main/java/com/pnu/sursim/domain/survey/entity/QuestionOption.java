@@ -16,7 +16,7 @@ public class QuestionOption {   //객관식응답(단일선택)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int indexOfCurrentResponse;
+    private int index;
 
     private String text;
 
@@ -26,8 +26,8 @@ public class QuestionOption {   //객관식응답(단일선택)
     private Question question;
 
     @Builder
-    public QuestionOption(int indexOfCurrentResponse, String text, Question question) {
-        this.indexOfCurrentResponse = indexOfCurrentResponse;
+    public QuestionOption(int index, String text, Question question) {
+        this.index = index;
         this.text = text;
         this.question = question;
     }
