@@ -102,7 +102,39 @@ public class SurveyService {
     }
 
     public Page<SurveyResponse> getSurveysForUser(String email, Pageable pageable) {
-        return null;
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
+        Page<Survey> surveys = surveyRepository.findAllByAgeAndGender(user.getBirthDate(),user.getGender(),pageable);
+
+        Page<SurveyResponse> surveyResponsePage = new PageImpl<>(surveys.getContent().stream()
+                .map(survey -> {
+                    //서베이의 문항을 적절하게 변환하는 로직
+                    List<QuestionResponse> questionResponses = questionRepository.findAllBySurveyIdOrderByIndexAsc(survey.getId())
+                            .stream()
+                            .map(question -> {
+                                //문항의 타입이 단일/체크 경우 변경
+                                if ((question.getQuestionType() == QuestionType.CHECK_CHOICE) || (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE)) {
+                                    List<QuestionOption> questionOptions = questionOptionRepository.findAllByQuestionIdOrderByIndexAsc(question.getId());
+                                    if (questionOptions.isEmpty()) {
+                                        throw new CustomException(ErrorCode.INCORRECT_CHOICE_QUESTION);
+                                    }
+                                    return SurveyFactory.makeChoiceQuestionResponse(question, questionOptions);
+                                }
+
+                                //문항 타입이 의미판별인 경우 변경
+                                if (question.getQuestionType() == QuestionType.SEMANTIC_RATINGS) {
+                                    SemanticOption semanticOption = semanticOptionRepository.findByQuestionId(question.getId())
+                                            .orElseThrow(() -> new CustomException(ErrorCode.INCORRECT_SEMANTIC_QUESTIONS));
+                                    return SurveyFactory.makeSemanticQuestionResponse(question, semanticOption);
+                                }
+                                return SurveyFactory.makeQuestionResponse(question);
+                            })
+                            .collect(Collectors.toList());
+
+                    return SurveyFactory.makeSurveyResponse(survey, questionResponses);
+                }).collect(Collectors.toList()), pageable, surveys.getTotalElements());
+
+        return surveyResponsePage;
     }
 
 

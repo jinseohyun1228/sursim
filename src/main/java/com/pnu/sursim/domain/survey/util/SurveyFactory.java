@@ -34,10 +34,10 @@ public class SurveyFactory {
                 .maxAge(maxAge)
                 .gender(surveyRequest.gender())
                 .ageGroup(ageGroup)
-                .collectionPurpose(surveyRequest.consentInfoRequest().collectionPurpose())
-                .collectedData(surveyRequest.consentInfoRequest().collectedData())
-                .retentionPeriod(surveyRequest.consentInfoRequest().retentionPeriod())
-                .contactInfo(surveyRequest.consentInfoRequest().contactInfo())
+                .collectionPurpose(surveyRequest.consentInfo().collectionPurpose())
+                .collectedData(surveyRequest.consentInfo().collectedData())
+                .retentionPeriod(surveyRequest.consentInfo().retentionPeriod())
+                .contactInfo(surveyRequest.consentInfo().contactInfo())
                 .build();
     }
 
