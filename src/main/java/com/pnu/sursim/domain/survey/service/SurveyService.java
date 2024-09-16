@@ -55,7 +55,7 @@ public class SurveyService {
                                 .collect(Collectors.toList());
                     }
 
-                    if (savedQuestion.getQuestionType() == QuestionType.LIKERT_SCORES) {
+                    if (savedQuestion.getQuestionType() == QuestionType.SEMANTIC_RATINGS) {
                         // 의미 분별 척도인 경우
                         SemanticOption semanticOption = semanticOptionRepository.save(SurveyFactory.makeSemantic(questionRequest.semanticOption(), savedQuestion));
 
@@ -86,7 +86,7 @@ public class SurveyService {
                                 }
 
                                 //문항 타입이 의미판별인 경우 변경
-                                if (question.getQuestionType() == QuestionType.LIKERT_SCORES) {
+                                if (question.getQuestionType() == QuestionType.SEMANTIC_RATINGS) {
                                     SemanticOption semanticOption = semanticOptionRepository.findByQuestionId(question.getId())
                                             .orElseThrow(() -> new CustomException(ErrorCode.INCORRECT_SEMANTIC_QUESTIONS));
                                     return SurveyFactory.makeSemanticQuestionResponse(question, semanticOption);
