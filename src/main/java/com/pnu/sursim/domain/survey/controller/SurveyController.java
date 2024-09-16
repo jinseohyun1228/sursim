@@ -5,6 +5,7 @@ import com.pnu.sursim.domain.survey.dto.SurveyResponse;
 import com.pnu.sursim.domain.survey.service.SurveyService;
 import com.pnu.sursim.domain.user.dto.AuthUser;
 import com.pnu.sursim.global.auth.resolver.SessionUser;
+import com.pnu.sursim.global.response.CustomPage;
 import com.pnu.sursim.global.response.CustomResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,7 +29,7 @@ public class SurveyController {
     @GetMapping("/surveys/all")
     public CustomResponse getSurveysForAll(@SessionUser AuthUser authUser,Pageable pageable) {
         Page<SurveyResponse> surveyResponsePage = surveyService.getSurveysForAll(authUser.getEmail(),pageable);
-        return CustomResponse.success(surveyResponsePage);
+        return CustomResponse.success(new CustomPage(surveyResponsePage));
     }
 
     @GetMapping("/surveys")
