@@ -76,6 +76,7 @@ public class SurveyFactory {
                 survey.getMinAge(),
                 survey.getMaxAge(),
                 survey.getPublicAccess(),
+                survey.getRewardStatus(),
                 survey.getGender(),
                 survey.getTimeRequired(),
                 survey.getPoints(),
