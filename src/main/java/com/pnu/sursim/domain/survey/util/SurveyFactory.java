@@ -130,4 +130,53 @@ public class SurveyFactory {
                 .build();
 
     }
+
+    public static SurveyWithRewardResponse makeSurveyWithRewardResponse(Survey survey, List<QuestionResponse> questionResponses, RewardResponse rewardResponse) {
+        return SurveyWithRewardResponse.builder()
+                .id(survey.getId())
+                .title(survey.getTitle())
+                .startDate(survey.getStartDate())
+                .dueDate(survey.getDueDate())
+                .ageGroup(survey.getAgeGroup())
+                .minAge(survey.getMinAge())
+                .maxAge(survey.getMaxAge())
+                .publicAccess(survey.getPublicAccess())
+                .rewardStatus(survey.getRewardStatus())
+                .gender(survey.getGender())
+                .timeRequired(survey.getTimeRequired())
+                .points(survey.getPoints())
+                .questionList(questionResponses)
+                .consentInfo(new ConsentInfoResponse(survey.getCollectionPurpose(), survey.getCollectedData(), survey.getRetentionPeriod(), survey.getContactInfo()))
+                .rewardResponse(rewardResponse)
+                .build();
+    }
+
+    public static RewardResponse makeRewardResponse(Reward reward) {
+        return RewardResponse.builder()
+                .title(reward.getTitle())
+                .rewardImg(reward.getRewardImg())
+                .count(reward.getCount())
+                .rewardType(reward.getRewardType())
+                .build();
+
+    }
+
+    public static SurveyResponse makeSurveyResponse(Survey survey, List<QuestionResponse> questionResponses) {
+        return SurveyResponse.builder()
+                .id(survey.getId())
+                .title(survey.getTitle())
+                .startDate(survey.getStartDate())
+                .dueDate(survey.getDueDate())
+                .ageGroup(survey.getAgeGroup())
+                .minAge(survey.getMinAge())
+                .maxAge(survey.getMaxAge())
+                .publicAccess(survey.getPublicAccess())
+                .rewardStatus(survey.getRewardStatus())
+                .gender(survey.getGender())
+                .timeRequired(survey.getTimeRequired())
+                .points(survey.getPoints())
+                .questionList(questionResponses)
+                .consentInfo(new ConsentInfoResponse(survey.getCollectionPurpose(), survey.getCollectedData(), survey.getRetentionPeriod(), survey.getContactInfo()))
+                .build();
+    }
 }
