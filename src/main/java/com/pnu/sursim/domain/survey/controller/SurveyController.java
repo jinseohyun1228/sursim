@@ -38,7 +38,7 @@ public class SurveyController {
     @GetMapping("/surveys")
     public CustomResponse getSurveysForUser(@SessionUser AuthUser authUser, Pageable pageable) {
         Page<SurveyResponse> surveyResponsePage = surveyService.getSurveysForUser(authUser.getEmail(),pageable);
-        return CustomResponse.success(surveyResponsePage);
+        return CustomResponse.success(new CustomPage(surveyResponsePage));
     }
 
     @PostMapping("/surveys/{id}/reward")
