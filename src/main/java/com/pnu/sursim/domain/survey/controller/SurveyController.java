@@ -29,7 +29,7 @@ public class SurveyController {
     public CustomResponse createSurvey(@SessionUser AuthUser authUser, @RequestBody SurveyRequest surveyRequest) {
         Map<String, Long> responseMap = new HashMap<>();
         Long id = surveyService.createSurvey(authUser.getEmail(),surveyRequest);
-        responseMap.put("surveyId", id);
+        responseMap.put("survey_id", id);
         return CustomResponse.success(responseMap);
     }
 
