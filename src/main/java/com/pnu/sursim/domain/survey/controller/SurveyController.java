@@ -28,7 +28,7 @@ public class SurveyController {
     }
     @GetMapping("/surveys/all")
     public CustomResponse getSurveysForAll(@SessionUser AuthUser authUser,Pageable pageable) {
-        Page<SurveyResponse> surveyResponsePage = surveyService.getSurveysForAll(authUser.getEmail(),pageable);
+        Page<SurveyResponse> surveyResponsePage = surveyService.getSurveysForAll(pageable);
         return CustomResponse.success(new CustomPage(surveyResponsePage));
     }
 
