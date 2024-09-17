@@ -1,9 +1,6 @@
 package com.pnu.sursim.domain.survey.service;
 
-import com.pnu.sursim.domain.survey.dto.QuestionResponse;
-import com.pnu.sursim.domain.survey.dto.RewardRequest;
-import com.pnu.sursim.domain.survey.dto.SurveyRequest;
-import com.pnu.sursim.domain.survey.dto.SurveyResponseRecode;
+import com.pnu.sursim.domain.survey.dto.*;
 import com.pnu.sursim.domain.survey.entity.*;
 import com.pnu.sursim.domain.survey.repository.*;
 import com.pnu.sursim.domain.survey.util.SurveyFactory;
@@ -72,7 +69,7 @@ public class SurveyService {
         // 내림차순으로 정렬된 PageRequest를 사용하여 서베이 조회
         Page<Survey> surveys = surveyRepository.findAll(pageRequest);
 
-        return completeSurveyPage(surveys,pageRequest);
+        return completeSurveyPage(surveys, pageRequest);
     }
 
     //유저에 맞는 서베이 페이지 조회
@@ -84,7 +81,7 @@ public class SurveyService {
 
         Page<Survey> surveys = surveyRepository.findAllByAgeAndGender(user.getBirthDate(), user.getGender(), pageRequest);
 
-        return completeSurveyPage(surveys,pageRequest);
+        return completeSurveyPage(surveys, pageRequest);
 
     }
 
@@ -109,7 +106,7 @@ public class SurveyService {
         //사이즈 3으로 제한하여 PageRequest 생성 (ID 기준 내림차순)
         Pageable top3PageRequest = PageRequest.of(0, 3, Sort.by("id").descending());
 
-        Page<Survey> surveys = surveyRepository.findAllByAgeAndGenderAndHasReward(user.getBirthDate(), user.getGender(),top3PageRequest);
+        Page<Survey> surveys = surveyRepository.findAllByAgeAndGenderAndHasReward(user.getBirthDate(), user.getGender(), top3PageRequest);
 
         return completeSurveyPage(surveys, top3PageRequest).getContent();
     }
@@ -127,9 +124,31 @@ public class SurveyService {
         //이미지 업로드
         String rewardImg = s3Service.uploadImg(rewardFile);
 
-        Reward savedReward = rewardRepository.save(SurveyFactory.makeReward(targetSurvey,rewardRequest, rewardImg));
+        Reward savedReward = rewardRepository.save(SurveyFactory.makeReward(targetSurvey, rewardRequest, rewardImg));
 
         targetSurvey.registerReward(savedReward);
+
+    }
+
+
+    public SurveyResponse getSurveysById(long surveyId) {
+        Survey targetSurvey = surveyRepository.findById(surveyId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST));
+        return completeSurvey(targetSurvey);
+
+    }
+
+    private SurveyResponse completeSurvey(Survey survey) {
+
+        List<QuestionResponse> questionResponseList = completeQuestionResponseList(survey);
+
+        if (!survey.hasReward()) {
+            return SurveyFactory.makeSurveyResponse(survey, questionResponseList);
+        }
+
+        RewardResponse rewardResponse = SurveyFactory.makeRewardResponse(rewardRepository.findBySurveyId(survey.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_NO_REWARDS)));
+        return SurveyFactory.makeSurveyWithRewardResponse(survey, questionResponseList, rewardResponse);
 
     }
 
@@ -139,34 +158,12 @@ public class SurveyService {
         List<SurveyResponseRecode> surveyResponsRecodes = surveys.getContent().stream()
                 .map(survey -> {
                     //서베이의 문항을 적절하게 변환하는 로직
-                    List<QuestionResponse> questionResponses = questionRepository.findAllBySurveyIdOrderByIndexAsc(survey.getId())
-                            .stream()
-                            .map(question -> {
-                                //문항의 타입이 단일/체크 경우 변경
-                                if ((question.getQuestionType() == QuestionType.CHECK_CHOICE) || (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE)) {
-                                    List<QuestionOption> questionOptions = questionOptionRepository.findAllByQuestionIdOrderByIndexAsc(question.getId());
-                                    if (questionOptions.isEmpty()) {
-                                        throw new CustomException(ErrorCode.INCORRECT_CHOICE_QUESTION);
-                                    }
-                                    return SurveyFactory.makeChoiceQuestionResponse(question, questionOptions);
-                                }
-
-                                //문항 타입이 의미판별인 경우 변경
-                                if (question.getQuestionType() == QuestionType.SEMANTIC_RATINGS) {
-                                    SemanticOption semanticOption = semanticOptionRepository.findByQuestionId(question.getId())
-                                            .orElseThrow(() -> new CustomException(ErrorCode.INCORRECT_SEMANTIC_QUESTIONS));
-                                    return SurveyFactory.makeSemanticQuestionResponse(question, semanticOption);
-                                }
-                                return SurveyFactory.makeQuestionResponse(question);
-                            })
-                            .collect(Collectors.toList());
-
+                    List<QuestionResponse> questionResponses = completeQuestionResponseList(survey);
                     //서베이를 응답 객체로 만드는 부분
                     return SurveyFactory.makeSurveyResponseRecode(survey, questionResponses);
                 }).collect(Collectors.toList());
 
         return new PageImpl<>(surveyResponsRecodes, pageable, surveys.getTotalElements());
-
     }
 
 
@@ -175,4 +172,28 @@ public class SurveyService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
     }
 
+
+    public List<QuestionResponse> completeQuestionResponseList(Survey survey) {
+        return questionRepository.findAllBySurveyIdOrderByIndexAsc(survey.getId())
+                .stream()
+                .map(question -> {
+                    //문항의 타입이 단일/체크 경우 변경
+                    if ((question.getQuestionType() == QuestionType.CHECK_CHOICE) || (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE)) {
+                        List<QuestionOption> questionOptions = questionOptionRepository.findAllByQuestionIdOrderByIndexAsc(question.getId());
+                        if (questionOptions.isEmpty()) {
+                            throw new CustomException(ErrorCode.INCORRECT_CHOICE_QUESTION);
+                        }
+                        return SurveyFactory.makeChoiceQuestionResponse(question, questionOptions);
+                    }
+
+                    //문항 타입이 의미판별인 경우 변경
+                    if (question.getQuestionType() == QuestionType.SEMANTIC_RATINGS) {
+                        SemanticOption semanticOption = semanticOptionRepository.findByQuestionId(question.getId())
+                                .orElseThrow(() -> new CustomException(ErrorCode.INCORRECT_SEMANTIC_QUESTIONS));
+                        return SurveyFactory.makeSemanticQuestionResponse(question, semanticOption);
+                    }
+                    return SurveyFactory.makeQuestionResponse(question);
+                })
+                .collect(Collectors.toList());
+    }
 }
