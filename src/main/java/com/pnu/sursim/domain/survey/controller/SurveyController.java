@@ -3,6 +3,7 @@ package com.pnu.sursim.domain.survey.controller;
 import com.pnu.sursim.domain.survey.dto.RewardRequest;
 import com.pnu.sursim.domain.survey.dto.SurveyRequest;
 import com.pnu.sursim.domain.survey.dto.SurveyResponse;
+import com.pnu.sursim.domain.survey.entity.RewardType;
 import com.pnu.sursim.domain.survey.service.SurveyService;
 import com.pnu.sursim.domain.user.dto.AuthUser;
 import com.pnu.sursim.global.auth.resolver.SessionUser;
@@ -11,6 +12,7 @@ import com.pnu.sursim.global.response.CustomResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -64,9 +66,12 @@ public class SurveyController {
     //서베이에 리워드 추가 요청
     @PostMapping("/surveys/{id}/reward")
     public CustomResponse addReward(@SessionUser AuthUser authUser,
-                                    @PathVariable("id")long surveyId,
-                                    @ModelAttribute RewardRequest rewardRequest,       // 폼 데이터를 객체로 받음
+                                    @PathVariable("id") long surveyId,
+                                    @RequestParam("title") String title,
+                                    @RequestParam("reward_type") RewardType rewardType,
+                                    @RequestParam("count") int count,
                                     @RequestParam("reward_file") MultipartFile rewardFile){ // 파일은 MultipartFile로 받음
+        RewardRequest rewardRequest = new RewardRequest(title, rewardType, count);
         surveyService.addReward(authUser.getEmail(),surveyId,rewardRequest,rewardFile);
         return CustomResponse.success("Reward registration has been successfully completed.");
     }
