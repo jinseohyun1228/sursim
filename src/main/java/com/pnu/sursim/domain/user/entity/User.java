@@ -46,6 +46,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserInfoStatus userInfoStatus;
 
+    public int reward;
+
     public User(JoinRequest joinRequest) {
         this.name = joinRequest.name();
         this.email = joinRequest.email();
@@ -54,6 +56,7 @@ public class User {
         this.gender = joinRequest.gender();
         this.region = joinRequest.region();
         this.userInfoStatus = UserInfoStatus.fromUser(this);
+        this.reward = 0;
     }
 
     public User(KakaoUser kakaoUser) {
@@ -61,6 +64,7 @@ public class User {
         this.email = kakaoUser.email();
         this.password = kakaoUser.password();
         this.userInfoStatus = UserInfoStatus.fromUser(this);
+        this.reward = 0;
     }
 
     public void updateProfile(ProfileRequest profileRequest) {
