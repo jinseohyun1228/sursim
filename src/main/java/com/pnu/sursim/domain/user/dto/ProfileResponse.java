@@ -13,8 +13,7 @@ public record ProfileResponse(String name,
                            String password,
                            LocalDate birthDate,
                            Gender gender,
-                           Region region,
-                           String imageUrl) {
+                           Region region) {
 
     public ProfileResponse(UserVo user) {
         this(
@@ -23,8 +22,7 @@ public record ProfileResponse(String name,
                 user.getPassword(),
                 user.getBirthDate(),
                 user.getGender(),
-                user.getRegion(),
-                user.getImageUrl()
+                user.getRegion()
         );
     }
 }

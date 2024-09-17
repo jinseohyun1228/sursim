@@ -1,5 +1,6 @@
 package com.pnu.sursim.global;
 
+import com.pnu.sursim.global.response.CustomResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthController {
 
     @GetMapping("/health")
-    public ResponseEntity<?> healthTest() {
-        return ResponseEntity.ok("It's working very well~!");
+    public CustomResponse healthTest() {
+        return CustomResponse.success("It's working very well~!");
     }
 }
