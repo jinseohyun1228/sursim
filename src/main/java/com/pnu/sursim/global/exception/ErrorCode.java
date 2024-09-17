@@ -22,7 +22,10 @@ public enum ErrorCode {
 
     //설문조사관련응답
     INCORRECT_CHOICE_QUESTION(HttpStatus.BAD_REQUEST,"An error occurred in the CHOICE_QUESTION. This may be a wrong survey. Please contact the developer."),
-    INCORRECT_SEMANTIC_QUESTIONS(HttpStatus.BAD_REQUEST,"An error occurred in the SEMANTIC_QUESTIONS. This may be a wrong survey. Please contact the developer.")
+    INCORRECT_SEMANTIC_QUESTIONS(HttpStatus.BAD_REQUEST,"An error occurred in the SEMANTIC_QUESTIONS. This may be a wrong survey. Please contact the developer."),
+
+    //이미지업로드 중 오류
+    ERROR_UPLOADING_IMAGE(HttpStatus.BAD_REQUEST,"An error occurred while uploading s3. Please contact the developer."),
     ;
 
     private final HttpStatus httpStatus;
