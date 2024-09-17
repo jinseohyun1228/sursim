@@ -21,6 +21,7 @@ public class Reward {
 
     private String title;
 
+    @Enumerated(EnumType.STRING)
     private RewardType rewardType;
 
     private int count;
