@@ -11,7 +11,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record SurveyResponse(String title,
+public record SurveyResponse(Long id,
+                             String title,
                              LocalDate startDate,
                              LocalDate dueDate,
                              AgeGroup ageGroup,

@@ -69,6 +69,7 @@ public class SurveyFactory {
 
     public static SurveyResponse makeSurveyResponse(Survey survey, List<QuestionResponse> questionResponses) {
         return new SurveyResponse(
+                survey.getId(),
                 survey.getTitle(),
                 survey.getStartDate(),
                 survey.getDueDate(),
