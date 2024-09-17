@@ -41,8 +41,11 @@ public class SurveyController {
         return CustomResponse.success(surveyResponsePage);
     }
 
-    @GetMapping("/surveys/{id}/reward")
-    public CustomResponse addReward(@SessionUser AuthUser authUser, @PathVariable("id")long surveyId, @RequestBody RewardRequest rewardRequest, @RequestParam("reward-img") MultipartFile rewardFile) {
+    @PostMapping("/surveys/{id}/reward")
+    public CustomResponse addReward(@SessionUser AuthUser authUser,
+                                    @PathVariable("id")long surveyId,
+                                    @ModelAttribute RewardRequest rewardRequest,       // 폼 데이터를 객체로 받음
+                                    @RequestParam("reward_file") MultipartFile rewardFile){ // 파일은 MultipartFile로 받음) {
         surveyService.addReward(authUser.getEmail(),surveyId,rewardRequest,rewardFile);
         return CustomResponse.success("Reward registration has been successfully completed.");
     }
