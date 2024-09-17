@@ -36,6 +36,7 @@ public class SurveyService {
     private final RewardRepository rewardRepository;
     private final S3Service s3Service;
 
+    //서베이 등록
     @Transactional
     public Long createSurvey(String email, SurveyRequest surveyRequest) {
 
@@ -65,19 +66,29 @@ public class SurveyService {
 
     }
 
-    public Page<SurveyResponse> getSurveysForAll(Pageable pageable) {
+    //
+    public Page<SurveyResponse> getSurveyPageForAll(Pageable pageable) {
         Page<Survey> surveys = surveyRepository.findAll(pageable);
 
-        return completeSurvey(surveys, pageable);
+        return completeSurveyPage(surveys, pageable);
     }
 
-    public Page<SurveyResponse> getSurveysForUser(String email, Pageable pageable) {
+    public Page<SurveyResponse> getSurveyPageForUser(String email, Pageable pageable) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
         Page<Survey> surveys = surveyRepository.findAllByAgeAndGender(user.getBirthDate(), user.getGender(), pageable);
 
-        return completeSurvey(surveys, pageable);
+        return completeSurveyPage(surveys, pageable);
 
+    }
+
+
+    public List<SurveyResponse> getSurveysForRewardTop3(String email) {
+        return null;
+    }
+
+    public Page<SurveyResponse> getSurveyPageForReward(String email, Pageable pageable) {
+        return null;
     }
 
     @Transactional
@@ -99,7 +110,8 @@ public class SurveyService {
     }
 
 
-    private Page<SurveyResponse> completeSurvey(Page<Survey> surveys, Pageable pageable) {
+
+    private Page<SurveyResponse> completeSurveyPage(Page<Survey> surveys, Pageable pageable) {
         List<SurveyResponse> surveyResponses = surveys.getContent().stream()
                 .map(survey -> {
                     //서베이의 문항을 적절하게 변환하는 로직
@@ -137,4 +149,5 @@ public class SurveyService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
     }
+
 }
