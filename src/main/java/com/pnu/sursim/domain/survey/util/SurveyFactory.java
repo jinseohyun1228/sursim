@@ -15,7 +15,7 @@ public class SurveyFactory {
     public static Survey makeSurvey(SurveyRequest surveyRequest, User creator) {
         AgeGroup ageGroup = AgeGroup.SPECIFIC;
 
-        if (surveyRequest.minAge()==null && surveyRequest.maxAge() ==null){
+        if (surveyRequest.minAge() == null && surveyRequest.maxAge() == null) {
             ageGroup = AgeGroup.ALL;
         }
 
@@ -67,7 +67,7 @@ public class SurveyFactory {
                 .build();
     }
 
-    public static SurveyResponse makeSurveyResponse(Survey survey, List<QuestionResponse> questionResponses ) {
+    public static SurveyResponse makeSurveyResponse(Survey survey, List<QuestionResponse> questionResponses) {
         return new SurveyResponse(
                 survey.getTitle(),
                 survey.getStartDate(),
@@ -87,7 +87,7 @@ public class SurveyFactory {
     public static ChoiceQuestionResponse makeChoiceQuestionResponse(Question question, List<QuestionOption> questionOptions) {
         return ChoiceQuestionResponse.builder()
                 .optionResponses(questionOptions.stream()
-                        .map(questionOption -> new OptionResponse(questionOption.getId(),questionOption.getIndex(),questionOption.getText()))
+                        .map(questionOption -> new OptionResponse(questionOption.getId(), questionOption.getIndex(), questionOption.getText()))
                         .collect(Collectors.toList()))
                 .id(question.getId())
                 .index(question.getIndex())
@@ -116,5 +116,16 @@ public class SurveyFactory {
                 .questionType(question.getQuestionType())
                 .requiredOption(question.getRequiredOption())
                 .build();
+    }
+
+    public static Reward makeReward(Survey targetSurvey, RewardRequest rewardRequest, String rewardImg) {
+        return Reward.builder()
+                .survey(targetSurvey)
+                .title(rewardRequest.title())
+                .rewardType(rewardRequest.rewardType())
+                .count(rewardRequest.count())
+                .rewardImg(rewardImg)
+                .build();
+
     }
 }
