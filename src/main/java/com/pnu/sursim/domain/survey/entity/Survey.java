@@ -2,6 +2,8 @@ package com.pnu.sursim.domain.survey.entity;
 
 import com.pnu.sursim.domain.user.entity.Gender;
 import com.pnu.sursim.domain.user.entity.User;
+import com.pnu.sursim.global.exception.CustomException;
+import com.pnu.sursim.global.exception.ErrorCode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
@@ -9,8 +11,6 @@ import jakarta.persistence.GenerationType;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Builder
 @Getter
@@ -55,8 +55,46 @@ public class Survey {
     @Enumerated(EnumType.STRING)
     AgeGroup ageGroup;
 
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private RewardStatus rewardStatus = RewardStatus.NO_REWARD;
+
+    @OneToOne
+    private Reward reward;
+
     private String collectionPurpose;   // 수집 목적
     private String collectedData;       // 수집 정보
     private String retentionPeriod;     // 보유 기간
     private String contactInfo;         // 가능한 연락처
+
+    public Boolean isCreator(User user) {
+        return this.creator == user;
+    }
+
+    public Survey validateAddReward() {
+        if (this.hasReward()) {
+            throw new CustomException(ErrorCode.SURVEY_ALREADY_HAS_REWARDS);
+        }
+        return this;
+    }
+
+    public boolean hasReward() {
+        return this.rewardStatus == RewardStatus.HAS_REWARD ;
+    }
+
+    public void registerReward(Reward reward) {
+        if (this.hasReward()) {
+            throw new CustomException(ErrorCode.SURVEY_ALREADY_HAS_REWARDS);
+        }
+        this.reward = reward;
+        this.rewardStatus = RewardStatus.HAS_REWARD;
+    }
+
+
+    public Survey validateCreator(User user) {
+        if (this.creator != user){
+            throw new CustomException(ErrorCode.SURVEY_UNAUTHORIZED_USER);
+        }
+        return this;
+    }
 }

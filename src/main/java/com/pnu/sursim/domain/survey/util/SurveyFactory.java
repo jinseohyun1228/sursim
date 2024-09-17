@@ -15,7 +15,7 @@ public class SurveyFactory {
     public static Survey makeSurvey(SurveyRequest surveyRequest, User creator) {
         AgeGroup ageGroup = AgeGroup.SPECIFIC;
 
-        if (surveyRequest.minAge()==null && surveyRequest.maxAge() ==null){
+        if (surveyRequest.minAge() == null && surveyRequest.maxAge() == null) {
             ageGroup = AgeGroup.ALL;
         }
 
@@ -67,8 +67,9 @@ public class SurveyFactory {
                 .build();
     }
 
-    public static SurveyResponse makeSurveyResponse(Survey survey, List<QuestionResponse> questionResponses ) {
-        return new SurveyResponse(
+    public static SurveyResponseRecode makeSurveyResponseRecode(Survey survey, List<QuestionResponse> questionResponses) {
+        return new SurveyResponseRecode(
+                survey.getId(),
                 survey.getTitle(),
                 survey.getStartDate(),
                 survey.getDueDate(),
@@ -76,6 +77,7 @@ public class SurveyFactory {
                 survey.getMinAge(),
                 survey.getMaxAge(),
                 survey.getPublicAccess(),
+                survey.getRewardStatus(),
                 survey.getGender(),
                 survey.getTimeRequired(),
                 survey.getPoints(),
@@ -87,7 +89,7 @@ public class SurveyFactory {
     public static ChoiceQuestionResponse makeChoiceQuestionResponse(Question question, List<QuestionOption> questionOptions) {
         return ChoiceQuestionResponse.builder()
                 .optionResponses(questionOptions.stream()
-                        .map(questionOption -> new OptionResponse(questionOption.getId(),questionOption.getIndex(),questionOption.getText()))
+                        .map(questionOption -> new OptionResponse(questionOption.getId(), questionOption.getIndex(), questionOption.getText()))
                         .collect(Collectors.toList()))
                 .id(question.getId())
                 .index(question.getIndex())
@@ -115,6 +117,66 @@ public class SurveyFactory {
                 .text(question.getText())
                 .questionType(question.getQuestionType())
                 .requiredOption(question.getRequiredOption())
+                .build();
+    }
+
+    public static Reward makeReward(Survey targetSurvey, RewardRequest rewardRequest, String rewardImg) {
+        return Reward.builder()
+                .survey(targetSurvey)
+                .title(rewardRequest.title())
+                .rewardType(rewardRequest.rewardType())
+                .count(rewardRequest.count())
+                .rewardImg(rewardImg)
+                .build();
+
+    }
+
+    public static SurveyWithRewardResponse makeSurveyWithRewardResponse(Survey survey, List<QuestionResponse> questionResponses, RewardResponse rewardResponse) {
+        return SurveyWithRewardResponse.builder()
+                .id(survey.getId())
+                .title(survey.getTitle())
+                .startDate(survey.getStartDate())
+                .dueDate(survey.getDueDate())
+                .ageGroup(survey.getAgeGroup())
+                .minAge(survey.getMinAge())
+                .maxAge(survey.getMaxAge())
+                .publicAccess(survey.getPublicAccess())
+                .rewardStatus(survey.getRewardStatus())
+                .gender(survey.getGender())
+                .timeRequired(survey.getTimeRequired())
+                .points(survey.getPoints())
+                .questionList(questionResponses)
+                .consentInfo(new ConsentInfoResponse(survey.getCollectionPurpose(), survey.getCollectedData(), survey.getRetentionPeriod(), survey.getContactInfo()))
+                .rewardResponse(rewardResponse)
+                .build();
+    }
+
+    public static RewardResponse makeRewardResponse(Reward reward) {
+        return RewardResponse.builder()
+                .title(reward.getTitle())
+                .rewardImg(reward.getRewardImg())
+                .count(reward.getCount())
+                .rewardType(reward.getRewardType())
+                .build();
+
+    }
+
+    public static SurveyResponse makeSurveyResponse(Survey survey, List<QuestionResponse> questionResponses) {
+        return SurveyResponse.builder()
+                .id(survey.getId())
+                .title(survey.getTitle())
+                .startDate(survey.getStartDate())
+                .dueDate(survey.getDueDate())
+                .ageGroup(survey.getAgeGroup())
+                .minAge(survey.getMinAge())
+                .maxAge(survey.getMaxAge())
+                .publicAccess(survey.getPublicAccess())
+                .rewardStatus(survey.getRewardStatus())
+                .gender(survey.getGender())
+                .timeRequired(survey.getTimeRequired())
+                .points(survey.getPoints())
+                .questionList(questionResponses)
+                .consentInfo(new ConsentInfoResponse(survey.getCollectionPurpose(), survey.getCollectedData(), survey.getRetentionPeriod(), survey.getContactInfo()))
                 .build();
     }
 }

@@ -16,4 +16,13 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
             "(YEAR(CURRENT_DATE) - YEAR(:birthDate)) <= s.maxAge AND " +
             "(s.gender = :gender OR s.gender = com.pnu.sursim.domain.user.entity.Gender.NONE)")
     Page<Survey> findAllByAgeAndGender(LocalDate birthDate, Gender gender, Pageable pageable);
+
+
+    @Query("SELECT s FROM Survey s WHERE " +
+            "(YEAR(CURRENT_DATE) - YEAR(:birthDate)) >= s.minAge AND " +
+            "(YEAR(CURRENT_DATE) - YEAR(:birthDate)) <= s.maxAge AND " +
+            "(s.gender = :gender OR s.gender = com.pnu.sursim.domain.user.entity.Gender.NONE) AND " +
+            "s.rewardStatus = com.pnu.sursim.domain.survey.entity.RewardStatus.HAS_REWARD")
+    Page<Survey> findAllByAgeAndGenderAndHasReward(LocalDate birthDate, Gender gender, Pageable pageable);
+
 }
