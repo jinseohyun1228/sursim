@@ -1,24 +1,24 @@
 package com.pnu.sursim.domain.survey.service;
 
 import com.pnu.sursim.domain.survey.dto.QuestionResponse;
+import com.pnu.sursim.domain.survey.dto.RewardRequest;
 import com.pnu.sursim.domain.survey.dto.SurveyRequest;
 import com.pnu.sursim.domain.survey.dto.SurveyResponse;
 import com.pnu.sursim.domain.survey.entity.*;
-import com.pnu.sursim.domain.survey.repository.QuestionOptionRepository;
-import com.pnu.sursim.domain.survey.repository.QuestionRepository;
-import com.pnu.sursim.domain.survey.repository.SemanticOptionRepository;
-import com.pnu.sursim.domain.survey.repository.SurveyRepository;
+import com.pnu.sursim.domain.survey.repository.*;
 import com.pnu.sursim.domain.survey.util.SurveyFactory;
 import com.pnu.sursim.domain.user.entity.User;
 import com.pnu.sursim.domain.user.repository.UserRepository;
 import com.pnu.sursim.global.exception.CustomException;
 import com.pnu.sursim.global.exception.ErrorCode;
+import com.pnu.sursim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,11 +33,13 @@ public class SurveyService {
     private final QuestionRepository questionRepository;
     private final QuestionOptionRepository questionOptionRepository;
     private final SemanticOptionRepository semanticOptionRepository;
+    private final RewardRepository rewardRepository;
+    private final S3Service s3Service;
 
     @Transactional
-    public void createSurvey(String email, SurveyRequest surveyRequest) {
-        User creator = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
+    public Long createSurvey(String email, SurveyRequest surveyRequest) {
+
+        User creator = findUserOrThrow(email);
 
         //문항 저장
         Survey savedSurvey = surveyRepository.save(SurveyFactory.makeSurvey(surveyRequest, creator));
@@ -59,6 +61,8 @@ public class SurveyService {
 
         });
 
+        return savedSurvey.getId();
+
     }
 
     public Page<SurveyResponse> getSurveysForAll(Pageable pageable) {
@@ -73,6 +77,24 @@ public class SurveyService {
         Page<Survey> surveys = surveyRepository.findAllByAgeAndGender(user.getBirthDate(), user.getGender(), pageable);
 
         return completeSurvey(surveys, pageable);
+
+    }
+
+    @Transactional
+    public void addReward(String email, long surveyId, RewardRequest rewardRequest, MultipartFile rewardFile) {
+        User creator = findUserOrThrow(email);
+
+        Survey targetSurvey = surveyRepository.findById(surveyId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST))
+                .validateAddReward()
+                .validateCreator(creator);
+
+        //이미지 업로드
+        String rewardImg = s3Service.uploadImg(rewardFile);
+
+        Reward savedReward = rewardRepository.save(SurveyFactory.makeReward(targetSurvey,rewardRequest, rewardImg));
+
+        targetSurvey.registerReward(savedReward);
 
     }
 
@@ -108,5 +130,11 @@ public class SurveyService {
 
         return new PageImpl<>(surveyResponses, pageable, surveys.getTotalElements());
 
+    }
+
+
+    private User findUserOrThrow(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
     }
 }
