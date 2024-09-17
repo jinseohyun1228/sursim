@@ -2,6 +2,7 @@ package com.pnu.sursim.domain.survey.controller;
 
 import com.pnu.sursim.domain.survey.dto.RewardRequest;
 import com.pnu.sursim.domain.survey.dto.SurveyRequest;
+import com.pnu.sursim.domain.survey.dto.SurveyResponse;
 import com.pnu.sursim.domain.survey.dto.SurveyResponseRecode;
 import com.pnu.sursim.domain.survey.entity.RewardType;
 import com.pnu.sursim.domain.survey.service.SurveyService;
@@ -75,11 +76,11 @@ public class SurveyController {
         return CustomResponse.success("Reward registration has been successfully completed.");
     }
 
-    //서베이에 리워드 추가 요청
+    //id기준 서베이 조회
     @GetMapping("/surveys/{id}")
     public CustomResponse addReward(@SessionUser AuthUser authUser, @PathVariable("id") long surveyId){
-        SurveyReson
-        return CustomResponse.success("Reward registration has been successfully completed.");
+        SurveyResponse surveyResponse = surveyService.getSurveysById(surveyId);
+        return CustomResponse.success(surveyResponse);
     }
 
 
