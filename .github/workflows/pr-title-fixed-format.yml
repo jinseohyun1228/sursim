@@ -1,0 +1,30 @@
+name: "Set Fixed PR Title Format"
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  set-pr-title:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v2
+
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-get install gh
+
+      - name: Set PR Title to Fixed Format
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 기존 제목을 가져와서 사용자가 주차와 이슈 번호를 넣을 수 있도록 기본 형식을 제공
+          ORIGINAL_TITLE="${{ github.event.pull_request.title }}"
+          FIXED_TITLE="[_주차/#이슈번호] $ORIGINAL_TITLE"
+          
+          echo "Setting PR title to: $FIXED_TITLE"
+          
+          # GitHub CLI로 PR 제목 업데이트
+          gh pr edit ${{ github.event.pull_request.number }} --title "$FIXED_TITLE"
