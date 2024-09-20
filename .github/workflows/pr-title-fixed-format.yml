@@ -12,9 +12,9 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v2
 
+      # GitHub CLI 설치
       - name: Install GitHub CLI
-        run: |
-          sudo apt-get install gh
+        uses: cli/gh-action@v2
 
       - name: Set PR Title to Fixed Format
         env:
