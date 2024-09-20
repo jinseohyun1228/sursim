@@ -1,5 +1,7 @@
 package com.pnu.sursim.domain.user.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.pnu.sursim.domain.user.entity.Gender;
 import com.pnu.sursim.domain.user.entity.Region;
 import com.pnu.sursim.domain.user.entity.User;
@@ -8,6 +10,7 @@ import lombok.Getter;
 import java.time.LocalDate;
 
 @Getter
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserVo {
 
     private long id;
@@ -17,7 +20,6 @@ public class UserVo {
     private LocalDate birthDate;
     private Gender gender;
     private Region region;
-    private String imageUrl;
 
     public UserVo(User user) {
         this.id = user.getId();
@@ -27,7 +29,6 @@ public class UserVo {
         this.birthDate = user.getBirthDate();
         this.gender = user.getGender();
         this.region = user.getRegion();
-        this.imageUrl = user.getImageUrl();
     }
 
 }
