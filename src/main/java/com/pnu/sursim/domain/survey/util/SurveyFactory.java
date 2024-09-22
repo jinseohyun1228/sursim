@@ -41,7 +41,7 @@ public class SurveyFactory {
                 .build();
     }
 
-    public static Question makeQuestion(QuestionRequest questionRequest, Survey survey) {
+    public static Question makeQuestion(SurveyRequest.QuestionRequest questionRequest, Survey survey) {
         return Question.builder()
                 .text(questionRequest.text())
                 .questionType(questionRequest.questionType())
@@ -51,7 +51,7 @@ public class SurveyFactory {
                 .build();
     }
 
-    public static QuestionOption makeOption(QuestionOptionRequest questionOptionRequest, Question question) {
+    public static QuestionOption makeOption(SurveyRequest.QuestionRequest.QuestionOptionRequest questionOptionRequest, Question question) {
         return QuestionOption.builder()
                 .index(questionOptionRequest.index())
                 .text(questionOptionRequest.text())
@@ -59,7 +59,7 @@ public class SurveyFactory {
                 .build();
     }
 
-    public static SemanticOption makeSemantic(SemanticOptionRequest semanticOptionRequest, Question question) {
+    public static SemanticOption makeSemantic(SurveyRequest.QuestionRequest.SemanticOptionRequest semanticOptionRequest, Question question) {
         return SemanticOption.builder()
                 .leftEnd(semanticOptionRequest.leftEnd())
                 .rightEnd(semanticOptionRequest.rightEnd())
@@ -67,29 +67,11 @@ public class SurveyFactory {
                 .build();
     }
 
-    public static SurveyResponseRecode makeSurveyResponseRecode(Survey survey, List<QuestionResponse> questionResponses) {
-        return new SurveyResponseRecode(
-                survey.getId(),
-                survey.getTitle(),
-                survey.getStartDate(),
-                survey.getDueDate(),
-                survey.getAgeGroup(),
-                survey.getMinAge(),
-                survey.getMaxAge(),
-                survey.getPublicAccess(),
-                survey.getRewardStatus(),
-                survey.getGender(),
-                survey.getTimeRequired(),
-                survey.getPoints(),
-                questionResponses,
-                new ConsentInfoResponse(survey.getCollectionPurpose(), survey.getCollectedData(), survey.getRetentionPeriod(), survey.getContactInfo()));
-    }
-
 
     public static ChoiceQuestionResponse makeChoiceQuestionResponse(Question question, List<QuestionOption> questionOptions) {
         return ChoiceQuestionResponse.builder()
                 .optionResponses(questionOptions.stream()
-                        .map(questionOption -> new OptionResponse(questionOption.getId(), questionOption.getIndex(), questionOption.getText()))
+                        .map(questionOption -> new ChoiceQuestionResponse.OptionResponse(questionOption.getId(), questionOption.getIndex(), questionOption.getText()))
                         .collect(Collectors.toList()))
                 .id(question.getId())
                 .index(question.getIndex())
@@ -101,7 +83,7 @@ public class SurveyFactory {
 
     public static SemanticQuestionResponse makeSemanticQuestionResponse(Question question, SemanticOption semanticOption) {
         return SemanticQuestionResponse.builder()
-                .semanticOption(new SemanticOptionResponse(semanticOption.getLeftEnd(), semanticOption.getRightEnd()))
+                .semanticOption(new SemanticQuestionResponse.SemanticOptionResponse(semanticOption.getLeftEnd(), semanticOption.getRightEnd()))
                 .id(question.getId())
                 .index(question.getIndex())
                 .text(question.getText())
@@ -131,7 +113,7 @@ public class SurveyFactory {
 
     }
 
-    public static SurveyWithRewardResponse makeSurveyWithRewardResponse(Survey survey, List<QuestionResponse> questionResponses, RewardResponse rewardResponse) {
+    public static SurveyWithRewardResponse makeSurveyWithRewardResponse(Survey survey, List<QuestionResponse> questionResponses, Reward reward) {
         return SurveyWithRewardResponse.builder()
                 .id(survey.getId())
                 .title(survey.getTitle())
@@ -146,23 +128,14 @@ public class SurveyFactory {
                 .timeRequired(survey.getTimeRequired())
                 .points(survey.getPoints())
                 .questionList(questionResponses)
-                .consentInfo(new ConsentInfoResponse(survey.getCollectionPurpose(), survey.getCollectedData(), survey.getRetentionPeriod(), survey.getContactInfo()))
-                .rewardResponse(rewardResponse)
+                .consentInfo(new SpecSurveyResponse.ConsentInfoResponse(survey.getCollectionPurpose(), survey.getCollectedData(), survey.getRetentionPeriod(), survey.getContactInfo()))
+                .reward(new SurveyWithRewardResponse.RewardResponse(reward.getTitle(), reward.getRewardType(), reward.getCount(), reward.getRewardImg()))
                 .build();
     }
 
-    public static RewardResponse makeRewardResponse(Reward reward) {
-        return RewardResponse.builder()
-                .title(reward.getTitle())
-                .rewardImg(reward.getRewardImg())
-                .count(reward.getCount())
-                .rewardType(reward.getRewardType())
-                .build();
 
-    }
-
-    public static SurveyResponse makeSurveyResponse(Survey survey, List<QuestionResponse> questionResponses) {
-        return SurveyResponse.builder()
+    public static SpecSurveyResponse makeSpecSurveyResponse(Survey survey, List<QuestionResponse> questionResponses) {
+        return SpecSurveyResponse.builder()
                 .id(survey.getId())
                 .title(survey.getTitle())
                 .startDate(survey.getStartDate())
@@ -176,7 +149,26 @@ public class SurveyFactory {
                 .timeRequired(survey.getTimeRequired())
                 .points(survey.getPoints())
                 .questionList(questionResponses)
-                .consentInfo(new ConsentInfoResponse(survey.getCollectionPurpose(), survey.getCollectedData(), survey.getRetentionPeriod(), survey.getContactInfo()))
+                .consentInfo(new SpecSurveyResponse.ConsentInfoResponse(survey.getCollectionPurpose(), survey.getCollectedData(), survey.getRetentionPeriod(), survey.getContactInfo()))
                 .build();
     }
+
+    public static SurveyResponse makeSurveyResponse(Survey survey) {
+        return SurveyResponse.builder()
+                .id(survey.getId())
+                .title(survey.getTitle())
+                .startDate(survey.getStartDate())
+                .dueDate(survey.getDueDate())
+                .ageGroup(survey.getAgeGroup())
+                .minAge(survey.getMinAge())
+                .maxAge(survey.getMaxAge())
+                .publicAccess(survey.getPublicAccess())
+                .rewardStatus(survey.getRewardStatus())
+                .gender(survey.getGender())
+                .timeRequired(survey.getTimeRequired())
+                .points(survey.getPoints())
+                .build();
+    }
+
+
 }

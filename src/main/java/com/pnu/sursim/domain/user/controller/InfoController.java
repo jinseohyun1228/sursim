@@ -17,7 +17,7 @@ public class InfoController {
 
     @GetMapping("/gender")
     public ResponseEntity<?> offerGenderInfo() {
-        Map<String,Object> genderMap = EnumSet.allOf(Gender.class)
+        Map<String, Object> genderMap = EnumSet.allOf(Gender.class)
                 .stream()
                 .collect(Collectors.toMap(
                         Gender::name,
@@ -30,7 +30,7 @@ public class InfoController {
 
     @GetMapping("/region")
     public ResponseEntity<?> offerRegionInfo() {
-        Map<String,Object> regionMap =  EnumSet.allOf(Region.class)
+        Map<String, Object> regionMap = EnumSet.allOf(Region.class)
                 .stream()
                 .collect(Collectors.toMap(
                         Region::name,

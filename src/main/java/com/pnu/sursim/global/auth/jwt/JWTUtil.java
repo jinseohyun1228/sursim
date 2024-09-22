@@ -31,8 +31,7 @@ public class JWTUtil {
     }
 
 
-
-    public String createToken(String name,String email) {
+    public String createToken(String name, String email) {
         String token = Jwts.builder()
                 .claim("name", name)
                 .claim("email", email)
