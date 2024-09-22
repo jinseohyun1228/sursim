@@ -76,7 +76,6 @@ public class KakaoService {
         if (kakaoUser == null) {
             throw new CustomException(ErrorCode.KAKAO_LOGIN_ERROR_NO_USER);
         }
-        ;
 
         User savedUser = userRepository.findByEmail(kakaoUser.email())
                 .orElseGet(() -> userRepository.save(new User(kakaoUser)));
