@@ -130,34 +130,33 @@ public class SurveyService {
 
     }
 
-
-    public SpecSurveyResponse getSurveysById(long surveyId) {
+    //id기준으로 서부이세부정보까지 반환 반환
+    public SpecSurveyResponse getSpecSurveysById(long surveyId) {
         Survey targetSurvey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST));
-        return completeSurvey(targetSurvey);
+
+        List<QuestionResponse> questionResponseList = completeQuestionResponseList(targetSurvey);
+
+        if (!targetSurvey.hasReward()) { //리워드가 없는 경우
+            return SurveyFactory.makeSpecSurveyResponse(targetSurvey, questionResponseList);
+        }
+
+        Reward reward = rewardRepository.findBySurveyId(targetSurvey.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_NO_REWARDS));
+        return SurveyFactory.makeSurveyWithRewardResponse(targetSurvey, questionResponseList, reward);
 
     }
 
-    private SpecSurveyResponse completeSurvey(Survey survey) {
 
-        List<QuestionResponse> questionResponseList = completeQuestionResponseList(survey);
-
-        if (!survey.hasReward()) { //리워드가 없는 경우
-            return SurveyFactory.makeSpecSurveyResponse(survey, questionResponseList);
-        }
-
-        Reward reward = rewardRepository.findBySurveyId(survey.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_NO_REWARDS));
-        return SurveyFactory.makeSurveyWithRewardResponse(survey, questionResponseList, reward);
-
+    public void saveSurveyResponse(SurveyAnswerRequest surveyAnswerRequest) {
     }
 
 
     //서베이 조회 페이지 객체를 만드는 부분
     private Page<SurveyResponse> completeSurveyPage(Page<Survey> surveys, Pageable pageable) {
-        List<SurveyResponse> surveyResponsRecodes = surveys.getContent().stream()
+        List<SurveyResponse> surveyResponseRecodes = surveys.getContent().stream()
                 .map(SurveyFactory::makeSurveyResponse).collect(Collectors.toList());
-        return new PageImpl<>(surveyResponsRecodes, pageable, surveys.getTotalElements());
+        return new PageImpl<>(surveyResponseRecodes, pageable, surveys.getTotalElements());
     }
 
 
@@ -168,6 +167,7 @@ public class SurveyService {
     }
 
 
+    //서베이의 문항 정보를 만드는 부분
     public List<QuestionResponse> completeQuestionResponseList(Survey survey) {
         return questionRepository.findAllBySurveyIdOrderByIndexAsc(survey.getId())
                 .stream()
@@ -193,4 +193,5 @@ public class SurveyService {
                 })
                 .collect(Collectors.toList());
     }
+
 }
