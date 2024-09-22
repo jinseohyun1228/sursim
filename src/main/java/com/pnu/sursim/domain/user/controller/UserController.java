@@ -1,11 +1,12 @@
 package com.pnu.sursim.domain.user.controller;
 
-import com.pnu.sursim.domain.user.dto.*;
+import com.pnu.sursim.domain.user.dto.AuthUser;
+import com.pnu.sursim.domain.user.dto.ProfileRequest;
+import com.pnu.sursim.domain.user.dto.UserVo;
 import com.pnu.sursim.domain.user.service.UserService;
 import com.pnu.sursim.global.auth.resolver.SessionUser;
 import com.pnu.sursim.global.response.CustomResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -24,8 +25,8 @@ public class UserController {
 
 
     @PatchMapping("/user/profile")
-    public CustomResponse  changeProfile(@SessionUser AuthUser user, @RequestBody ProfileRequest profileRequest) {
-        UserVo userVo = userService.changeProfile(user,profileRequest);
+    public CustomResponse changeProfile(@SessionUser AuthUser user, @RequestBody ProfileRequest profileRequest) {
+        UserVo userVo = userService.changeProfile(user, profileRequest);
         return CustomResponse.success(userVo);
     }
 

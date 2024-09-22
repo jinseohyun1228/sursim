@@ -3,7 +3,7 @@ package com.pnu.sursim.domain.user.entity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum Gender{
+public enum Gender {
     FEMALE("여성"),
     MALE("남성"),
     NONE("무관");
@@ -14,11 +14,6 @@ public enum Gender{
         this.koreanName = koreanName;
     }
 
-    public String getKoreanName() {
-        return koreanName;
-    }
-
-
     // JSON에서 한글 이름으로 매핑
     @JsonCreator
     public static Gender fromKoreanName(String koreanName) {
@@ -28,6 +23,10 @@ public enum Gender{
             }
         }
         throw new IllegalArgumentException("Invalid gender: " + koreanName);
+    }
+
+    public String getKoreanName() {
+        return koreanName;
     }
 
     // JSON 출력 시 한글 이름으로 출력

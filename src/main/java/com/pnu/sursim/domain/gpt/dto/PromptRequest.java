@@ -7,7 +7,7 @@ import java.util.List;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record PromptRequest(String model,
-                            List<ChatRequestMsgDto> messages){
+                            List<ChatRequestMsgDto> messages) {
 
     record ChatRequestMsgDto(String role,
                              String content) {

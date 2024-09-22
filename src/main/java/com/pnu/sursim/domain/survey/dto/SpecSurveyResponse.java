@@ -2,21 +2,27 @@ package com.pnu.sursim.domain.survey.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.pnu.sursim.domain.survey.entity.RewardType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @SuperBuilder
-public class SurveyWithRewardResponse extends SpecSurveyResponse {
-    private RewardResponse reward;
+public class SpecSurveyResponse extends SurveyResponse {
+    protected List<QuestionResponse> questionList;
+    protected ConsentInfoResponse consentInfo;
 
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-    public record RewardResponse(String title, RewardType rewardType, int count, String rewardImg) {
+    public record ConsentInfoResponse(String collectionPurpose,
+                                      String collectedData,
+                                      String retentionPeriod,
+                                      String contactInfo) {
     }
+
 }

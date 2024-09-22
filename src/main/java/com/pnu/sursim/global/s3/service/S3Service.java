@@ -22,10 +22,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class S3Service {
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucketName;
     private final AmazonS3Client s3Client;
     private final S3ImgRepository s3ImgRepository;
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
 
     //s3으로 파일 업로드
     @Transactional
@@ -55,7 +55,7 @@ public class S3Service {
         } catch (IOException e) {
             throw new CustomException(ErrorCode.ERROR_UPLOADING_IMAGE);
         }
-        S3Img savedS3Image = s3ImgRepository.save( S3Img.builder()
+        S3Img savedS3Image = s3ImgRepository.save(S3Img.builder()
                 .originalFileName(originalFileName)
                 .uploadFileUrl(uploadFileUrl)
                 .uploadFileName(uploadFileName)

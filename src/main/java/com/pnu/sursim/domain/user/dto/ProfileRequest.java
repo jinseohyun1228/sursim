@@ -14,7 +14,7 @@ public record ProfileRequest(String name,
                              Region region,
                              String imageUrl) {
 
-    public boolean existName(){
+    public boolean existName() {
         return this.name != null && !this.name.isBlank();
     }
 

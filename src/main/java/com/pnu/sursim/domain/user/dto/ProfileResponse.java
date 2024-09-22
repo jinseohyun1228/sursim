@@ -9,11 +9,11 @@ import java.time.LocalDate;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record ProfileResponse(String name,
-                           String email,
-                           String password,
-                           LocalDate birthDate,
-                           Gender gender,
-                           Region region) {
+                              String email,
+                              String password,
+                              LocalDate birthDate,
+                              Gender gender,
+                              Region region) {
 
     public ProfileResponse(UserVo user) {
         this(

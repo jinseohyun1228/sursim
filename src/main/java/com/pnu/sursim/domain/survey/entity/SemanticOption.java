@@ -1,6 +1,5 @@
 package com.pnu.sursim.domain.survey.entity;
 
-import com.pnu.sursim.domain.survey.entity.Question;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
