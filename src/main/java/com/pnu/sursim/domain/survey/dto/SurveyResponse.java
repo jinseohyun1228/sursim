@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.util.List;
-
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,23 +30,4 @@ public class SurveyResponse {
     protected Gender gender;
     protected int timeRequired;
     protected int points;
-    protected List<QuestionResponse> questionList;
-    protected ConsentInfoResponse consentInfo;
-
-    public SurveyResponse(Long id, String title, LocalDate startDate, LocalDate dueDate, AgeGroup ageGroup, Integer minAge, Integer maxAge, PublicAccess publicAccess, RewardStatus rewardStatus, Gender gender, int timeRequired, int points, List<QuestionResponse> questionList, ConsentInfoResponse consentInfo) {
-        this.id = id;
-        this.title = title;
-        this.startDate = startDate;
-        this.dueDate = dueDate;
-        this.ageGroup = ageGroup;
-        this.minAge = minAge;
-        this.maxAge = maxAge;
-        this.publicAccess = publicAccess;
-        this.rewardStatus = rewardStatus;
-        this.gender = gender;
-        this.timeRequired = timeRequired;
-        this.points = points;
-        this.questionList = questionList;
-        this.consentInfo = consentInfo;
-    }
 }

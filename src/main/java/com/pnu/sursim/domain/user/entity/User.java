@@ -16,38 +16,30 @@ import java.util.Objects;
 @NoArgsConstructor
 public class User {
 
+    public int reward;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
     //이름
     @Column(nullable = false)
     private String name;
-
     //이메일
     @Column(nullable = false, unique = true)
     private String email;
-
     //비밀번호
     @Column(nullable = false)
     private String password;
-
     //생년월일
     @Column(name = "birth_date")
     private LocalDate birthDate;
-
     //성별
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
     //지역
     @Enumerated(EnumType.STRING)
     private Region region;
-
     @Enumerated(EnumType.STRING)
     private UserInfoStatus userInfoStatus;
-
-    public int reward;
 
     public User(JoinRequest joinRequest) {
         this.name = joinRequest.name();

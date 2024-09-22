@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.pnu.sursim.domain.user.entity.Gender;
 import com.pnu.sursim.domain.user.entity.Region;
-import com.pnu.sursim.global.exception.CustomException;
-import com.pnu.sursim.global.exception.ErrorCode;
 
 import java.time.LocalDate;
 

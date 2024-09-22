@@ -1,10 +1,13 @@
 package com.pnu.sursim.global.response;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.pnu.sursim.global.exception.CustomException;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CustomResponse {
 
     private HttpStatus httpStatus;
@@ -22,10 +25,10 @@ public class CustomResponse {
     }
 
     public static CustomResponse fail(CustomException customException) {
-        return new CustomResponse(customException.getHttpStatus(),customException.getMessage());
+        return new CustomResponse(customException.getHttpStatus(), customException.getMessage());
     }
 
     public static CustomResponse fail(Exception exception) {
-        return new CustomResponse(HttpStatus.BAD_REQUEST,exception.getMessage());
+        return new CustomResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 }

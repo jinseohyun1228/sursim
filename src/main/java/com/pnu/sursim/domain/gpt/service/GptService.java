@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pnu.sursim.domain.gpt.dto.PromptRequest;
 import com.pnu.sursim.domain.gpt.properties.GptProperties;
-import com.pnu.sursim.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,7 @@ public class GptService {
 
         // [STEP2] 통신을 위한 RestTemplate을 구성합니다.
         ResponseEntity<String> response = new RestTemplate()
-                .exchange(gptProperties.modelListUrl()+ "/" + modelName, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+                .exchange(gptProperties.modelListUrl() + "/" + modelName, HttpMethod.GET, new HttpEntity<>(headers), String.class);
         try {
             // [STEP3] Jackson을 기반으로 응답값을 가져옵니다.
             ObjectMapper om = new ObjectMapper();

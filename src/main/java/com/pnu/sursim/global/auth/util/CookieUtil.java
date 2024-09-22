@@ -6,7 +6,7 @@ public class CookieUtil {
 
     public static String Authorization = "Authorization";
 
-    public static Cookie createCookie( String value) {
+    public static Cookie createCookie(String value) {
 
         Cookie cookie = new Cookie(Authorization, value);
         cookie.setMaxAge(60 * 60 * 60);

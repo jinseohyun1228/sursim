@@ -73,21 +73,21 @@ public class KakaoService {
                 .toEntity(KakaoUser.class)
                 .getBody();
 
-        if(kakaoUser == null){
+        if (kakaoUser == null) {
             throw new CustomException(ErrorCode.KAKAO_LOGIN_ERROR_NO_USER);
-        };
+        }
 
         User savedUser = userRepository.findByEmail(kakaoUser.email())
-                .orElseGet(()->userRepository.save(new User(kakaoUser)));
+                .orElseGet(() -> userRepository.save(new User(kakaoUser)));
 
         String jwtToken = jwtUtil.createToken(savedUser.getName(), savedUser.getEmail());
 
-        return new AuthStatus(jwtToken,savedUser.getUserInfoStatus());
+        return new AuthStatus(jwtToken, savedUser.getUserInfoStatus());
     }
 
     public UserInfoStatus registerUserInfoFirst(AuthUser authUser, KakaoFirstInfo kakaoFirstInfo) {
         User targetUser = userRepository.findByEmail(authUser.getEmail())
-                .orElseThrow(()->new CustomException(ErrorCode.USER_ERROR));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
 
         targetUser.registerUserInfoFirst(kakaoFirstInfo.birthDate(), kakaoFirstInfo.gender(), kakaoFirstInfo.region());
 

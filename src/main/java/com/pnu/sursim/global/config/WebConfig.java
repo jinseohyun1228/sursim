@@ -1,8 +1,6 @@
 package com.pnu.sursim.global.config;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.pnu.sursim.global.auth.interceptor.AuthInterceptor;
 import com.pnu.sursim.global.auth.resolver.SessionUserArgumentResolver;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +28,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authLoginInterceptor)
-                .addPathPatterns("/api/surveys","/api/surveys/**","/api/user/**","/api/auth/kakao-first-login")
-                .excludePathPatterns("/api/auth/login","/api/auth/login/**","/api/auth/join", "/api/health");
+                .addPathPatterns("/api/surveys", "/api/surveys/**", "/api/user/**", "/api/auth/kakao-first-login")
+                .excludePathPatterns("/api/auth/login", "/api/auth/login/**", "/api/auth/join", "/api/health");
 
     }
 

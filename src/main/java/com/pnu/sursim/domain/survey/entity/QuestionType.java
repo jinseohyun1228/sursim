@@ -10,8 +10,8 @@ public enum QuestionType {
     SUBJECTIVE("주관식", 3), // 3분
     DESCRIPTIVE("서술형", 5); // 5분
 
-    private String description;
     private final int timeTaken;
+    private String description;
 
     QuestionType(String description, int minutes) {
         this.description = description;
@@ -21,6 +21,7 @@ public enum QuestionType {
     public int getTimeTaken() {
         return timeTaken;
     }
+
     public String getDescription() {
         return description;
     }

@@ -4,10 +4,7 @@ import com.pnu.sursim.domain.user.entity.Gender;
 import com.pnu.sursim.domain.user.entity.User;
 import com.pnu.sursim.global.exception.CustomException;
 import com.pnu.sursim.global.exception.ErrorCode;
-import jakarta.persistence.Entity;
 import jakarta.persistence.*;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -19,42 +16,30 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Survey {
 
+    @Enumerated(EnumType.STRING)
+    AgeGroup ageGroup;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne
     @JoinColumn(name = "users_id")
     private User creator;
-
     //설문 제목
     private String title;
-
     //시작날짜
     private LocalDate startDate;
-
     //마감날짜
     private LocalDate dueDate;
-
     //가능한 나이 시작
     private int minAge;
-
     //가능한 나이 끝
     private int maxAge;
-
     @Enumerated(EnumType.STRING)
     private PublicAccess publicAccess;
-
     private int timeRequired;
-
     private int points;
-
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
-    @Enumerated(EnumType.STRING)
-    AgeGroup ageGroup;
-
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private RewardStatus rewardStatus = RewardStatus.NO_REWARD;
@@ -79,7 +64,7 @@ public class Survey {
     }
 
     public boolean hasReward() {
-        return this.rewardStatus == RewardStatus.HAS_REWARD ;
+        return this.rewardStatus == RewardStatus.HAS_REWARD;
     }
 
     public void registerReward(Reward reward) {
@@ -92,7 +77,7 @@ public class Survey {
 
 
     public Survey validateCreator(User user) {
-        if (this.creator != user){
+        if (this.creator != user) {
             throw new CustomException(ErrorCode.SURVEY_UNAUTHORIZED_USER);
         }
         return this;

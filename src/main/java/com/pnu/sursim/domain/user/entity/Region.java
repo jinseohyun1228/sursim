@@ -31,11 +31,6 @@ public enum Region {
         this.koreanName = koreanName;
     }
 
-    public String getKoreanName() {
-        return koreanName;
-    }
-
-
     // JSON으로부터 한글 이름을 매핑
     @JsonCreator
     public static Region fromKoreanName(String koreanName) {
@@ -45,6 +40,10 @@ public enum Region {
             }
         }
         throw new IllegalArgumentException("Invalid region name: " + koreanName);
+    }
+
+    public String getKoreanName() {
+        return koreanName;
     }
 
     // JSON 출력 시 한글 이름으로 출력

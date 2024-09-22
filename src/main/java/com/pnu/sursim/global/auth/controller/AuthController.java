@@ -3,8 +3,8 @@ package com.pnu.sursim.global.auth.controller;
 
 import com.pnu.sursim.domain.user.dto.AuthUser;
 import com.pnu.sursim.domain.user.dto.JoinRequest;
-import com.pnu.sursim.domain.user.dto.LoginRequest;
 import com.pnu.sursim.domain.user.dto.KakaoFirstInfo;
+import com.pnu.sursim.domain.user.dto.LoginRequest;
 import com.pnu.sursim.domain.user.entity.UserInfoStatus;
 import com.pnu.sursim.global.auth.dto.AuthStatus;
 import com.pnu.sursim.global.auth.dto.KakaoToken;
@@ -28,20 +28,20 @@ public class AuthController {
     private final NativeService nativeService;
 
     @PostMapping("/auth/login/kakao")
-    public CustomResponse loginKakaoUser(@RequestBody KakaoToken kakaoToken,HttpServletResponse response){
+    public CustomResponse loginKakaoUser(@RequestBody KakaoToken kakaoToken, HttpServletResponse response) {
         AuthStatus authStatus = kakaoService.loginUserUsingKakaoToken(kakaoToken);
         response.addCookie(CookieUtil.createCookie(authStatus.token()));
         return CustomResponse.success(authStatus.status());
     }
 
     @PostMapping("/auth/kakao-first-login")
-    public CustomResponse registerUserInfoFirst(@SessionUser AuthUser authUser,@RequestBody KakaoFirstInfo kakaoFirstInfo){
-         UserInfoStatus userInfoStatus = kakaoService.registerUserInfoFirst(authUser, kakaoFirstInfo);
+    public CustomResponse registerUserInfoFirst(@SessionUser AuthUser authUser, @RequestBody KakaoFirstInfo kakaoFirstInfo) {
+        UserInfoStatus userInfoStatus = kakaoService.registerUserInfoFirst(authUser, kakaoFirstInfo);
         return CustomResponse.success(userInfoStatus);
     }
 
     @PostMapping("/auth/join")
-    public void joinNativeUser(@RequestBody JoinRequest joinRequest,HttpServletResponse response) {
+    public void joinNativeUser(@RequestBody JoinRequest joinRequest, HttpServletResponse response) {
         String token = nativeService.joinUser(joinRequest);
         response.addCookie(CookieUtil.createCookie(token));
     }
@@ -62,7 +62,7 @@ public class AuthController {
 
     //BE에서 테스트를 위해 만든
     @GetMapping("/auth/login/kakao-token")
-    public CustomResponse offerKakaoToken(@RequestParam("code") String code, HttpServletResponse response){
+    public CustomResponse offerKakaoToken(@RequestParam("code") String code, HttpServletResponse response) {
         KakaoToken kakaoToken = kakaoService.retrieveKakaoToken(code);
         return CustomResponse.success(kakaoToken);
     }

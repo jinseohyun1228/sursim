@@ -62,18 +62,18 @@ public class SurveyService {
     }
 
     //모든 서베이 페이지 조회
-    public Page<SurveyResponseRecode> getSurveyPageForAll(Pageable pageable) {
+    public Page<SurveyResponse> getSurveyPageForAll(Pageable pageable) {
         //id기준 내림차순으로 정렬될 수 있도록 PageRequest생성
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
 
-        // 내림차순으로 정렬된 PageRequest를 사용하여 서베이 조회
+        //내림차순으로 정렬된 PageRequest를 사용하여 서베이 조회
         Page<Survey> surveys = surveyRepository.findAll(pageRequest);
 
         return completeSurveyPage(surveys, pageRequest);
     }
 
     //유저에 맞는 서베이 페이지 조회
-    public Page<SurveyResponseRecode> getSurveyPageForUser(String email, Pageable pageable) {
+    public Page<SurveyResponse> getSurveyPageForUser(String email, Pageable pageable) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
 
@@ -87,19 +87,18 @@ public class SurveyService {
 
 
     //리워드가 있고 유저에게 맞는 서베이 페이지 조회
-    public Page<SurveyResponseRecode> getSurveyPageForReward(String email, Pageable pageable) {
+    public Page<SurveyResponse> getSurveyPageForReward(String email, Pageable pageable) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
 
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
 
         Page<Survey> surveys = surveyRepository.findAllByAgeAndGenderAndHasReward(user.getBirthDate(), user.getGender(), pageRequest);
-
         return completeSurveyPage(surveys, pageRequest);
     }
 
     //리워드가 있고 유저에게 맞는 서베이 3개만 조회
-    public List<SurveyResponseRecode> getSurveysForRewardTop3(String email) {
+    public List<SurveyResponse> getSurveysForRewardTop3(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
 
@@ -112,6 +111,7 @@ public class SurveyService {
     }
 
 
+    //리워드 등록
     @Transactional
     public void addReward(String email, long surveyId, RewardRequest rewardRequest, MultipartFile rewardFile) {
         User creator = findUserOrThrow(email);
@@ -131,42 +131,37 @@ public class SurveyService {
     }
 
 
-    public SurveyResponse getSurveysById(long surveyId) {
+    public SpecSurveyResponse getSurveysById(long surveyId) {
         Survey targetSurvey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST));
         return completeSurvey(targetSurvey);
 
     }
 
-    private SurveyResponse completeSurvey(Survey survey) {
+    private SpecSurveyResponse completeSurvey(Survey survey) {
 
         List<QuestionResponse> questionResponseList = completeQuestionResponseList(survey);
 
-        if (!survey.hasReward()) {
-            return SurveyFactory.makeSurveyResponse(survey, questionResponseList);
+        if (!survey.hasReward()) { //리워드가 없는 경우
+            return SurveyFactory.makeSpecSurveyResponse(survey, questionResponseList);
         }
 
-        RewardResponse rewardResponse = SurveyFactory.makeRewardResponse(rewardRepository.findBySurveyId(survey.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_NO_REWARDS)));
-        return SurveyFactory.makeSurveyWithRewardResponse(survey, questionResponseList, rewardResponse);
+        Reward reward = rewardRepository.findBySurveyId(survey.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_NO_REWARDS));
+        return SurveyFactory.makeSurveyWithRewardResponse(survey, questionResponseList, reward);
 
     }
 
 
-    //서베이페이지를 서베이응답형태페이지로 만드는 로직 (문항 추가, 필요 경우 문항 옵션 추가등)
-    private Page<SurveyResponseRecode> completeSurveyPage(Page<Survey> surveys, Pageable pageable) {
-        List<SurveyResponseRecode> surveyResponsRecodes = surveys.getContent().stream()
-                .map(survey -> {
-                    //서베이의 문항을 적절하게 변환하는 로직
-                    List<QuestionResponse> questionResponses = completeQuestionResponseList(survey);
-                    //서베이를 응답 객체로 만드는 부분
-                    return SurveyFactory.makeSurveyResponseRecode(survey, questionResponses);
-                }).collect(Collectors.toList());
-
+    //서베이 조회 페이지 객체를 만드는 부분
+    private Page<SurveyResponse> completeSurveyPage(Page<Survey> surveys, Pageable pageable) {
+        List<SurveyResponse> surveyResponsRecodes = surveys.getContent().stream()
+                .map(SurveyFactory::makeSurveyResponse).collect(Collectors.toList());
         return new PageImpl<>(surveyResponsRecodes, pageable, surveys.getTotalElements());
     }
 
 
+    //유저의 유효성을 검사하고 예외를 발생시키는 부분
     private User findUserOrThrow(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
@@ -177,7 +172,7 @@ public class SurveyService {
         return questionRepository.findAllBySurveyIdOrderByIndexAsc(survey.getId())
                 .stream()
                 .map(question -> {
-                    //문항의 타입이 단일/체크 경우 변경
+                    //문항의 타입이 단일/체크 경우 ChoiceQuestionResponse 반환
                     if ((question.getQuestionType() == QuestionType.CHECK_CHOICE) || (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE)) {
                         List<QuestionOption> questionOptions = questionOptionRepository.findAllByQuestionIdOrderByIndexAsc(question.getId());
                         if (questionOptions.isEmpty()) {
@@ -186,12 +181,14 @@ public class SurveyService {
                         return SurveyFactory.makeChoiceQuestionResponse(question, questionOptions);
                     }
 
-                    //문항 타입이 의미판별인 경우 변경
+                    //문항 타입이 의미판별인 경우 변경 -> SemanticQuestionResponse
                     if (question.getQuestionType() == QuestionType.SEMANTIC_RATINGS) {
                         SemanticOption semanticOption = semanticOptionRepository.findByQuestionId(question.getId())
                                 .orElseThrow(() -> new CustomException(ErrorCode.INCORRECT_SEMANTIC_QUESTIONS));
                         return SurveyFactory.makeSemanticQuestionResponse(question, semanticOption);
                     }
+
+                    //일반 문항 -> QuestionResponse
                     return SurveyFactory.makeQuestionResponse(question);
                 })
                 .collect(Collectors.toList());

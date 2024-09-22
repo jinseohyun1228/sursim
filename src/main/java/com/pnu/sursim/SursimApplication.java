@@ -10,12 +10,12 @@ import org.springframework.web.filter.HiddenHttpMethodFilter;
 @ConfigurationPropertiesScan
 public class SursimApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SursimApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SursimApplication.class, args);
+    }
 
-	@Bean
-	public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
-		return new HiddenHttpMethodFilter();
-	}
+    @Bean
+    public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+        return new HiddenHttpMethodFilter();
+    }
 }
