@@ -137,12 +137,15 @@ public class SurveyService {
 
         List<QuestionResponse> questionResponseList = completeQuestionResponseList(targetSurvey);
 
-        if (!targetSurvey.hasReward()) { //리워드가 없는 경우
+        //리워드가 없는 경우
+        if (!targetSurvey.hasReward()) {
             return SurveyFactory.makeSpecSurveyResponse(targetSurvey, questionResponseList);
         }
 
+        //리워드가 있는 경우
         Reward reward = rewardRepository.findBySurveyId(targetSurvey.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_NO_REWARDS));
+
         return SurveyFactory.makeSurveyWithRewardResponse(targetSurvey, questionResponseList, reward);
 
     }

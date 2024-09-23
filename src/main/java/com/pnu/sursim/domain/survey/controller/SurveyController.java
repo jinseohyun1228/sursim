@@ -2,7 +2,8 @@ package com.pnu.sursim.domain.survey.controller;
 
 import com.pnu.sursim.domain.survey.dto.*;
 import com.pnu.sursim.domain.survey.entity.RewardType;
-import com.pnu.sursim.domain.survey.service.SurveyAnswerService;
+import com.pnu.sursim.domain.surveyanswer.dto.SurveyAnswerRequest;
+import com.pnu.sursim.domain.surveyanswer.service.SurveyAnswerService;
 import com.pnu.sursim.domain.survey.service.SurveyService;
 import com.pnu.sursim.domain.user.dto.AuthUser;
 import com.pnu.sursim.global.auth.resolver.SessionUser;
@@ -85,7 +86,7 @@ public class SurveyController {
     //서베이 응답하기 POST /surveys/{surveyId}/responses
     @PostMapping("/surveys/{id}/responses")
     public CustomResponse submitSurveyAnswer(@PathVariable("id") long surveyId,@SessionUser AuthUser authUser, @RequestBody SurveyAnswerRequest surveyAnswerRequest){
-        surveyAnswerService.saveSurveyAnswer(surveyId, authUser,surveyAnswerRequest);
+        surveyAnswerService.saveSurveyAnswer(authUser.getEmail(), surveyId,surveyAnswerRequest);
         return CustomResponse.success("The user's response has been successfully saved.");
     }
 

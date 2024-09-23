@@ -1,5 +1,7 @@
-package com.pnu.sursim.domain.survey.entity;
+package com.pnu.sursim.domain.surveyanswer.entity;
 
+import com.pnu.sursim.domain.survey.entity.ConsentStatus;
+import com.pnu.sursim.domain.survey.entity.Survey;
 import com.pnu.sursim.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,6 +22,10 @@ public class SurveyAnswer {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "survey_id")
+    private Survey survey;
+
+    @ManyToOne
     @JoinColumn(name = "users_id")
     private User answeringUser;
 
@@ -28,7 +34,6 @@ public class SurveyAnswer {
     //동의여부
     @Enumerated(EnumType.STRING)
     private ConsentStatus consentStatus;
-
 
     @Builder.Default
     @OneToMany(mappedBy = "question_answer")
