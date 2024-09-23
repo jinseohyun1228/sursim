@@ -18,28 +18,40 @@ public class Survey {
 
     @Enumerated(EnumType.STRING)
     AgeGroup ageGroup;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne
     @JoinColumn(name = "users_id")
     private User creator;
+
     //설문 제목
     private String title;
+
     //시작날짜
     private LocalDate startDate;
+
     //마감날짜
     private LocalDate dueDate;
+
     //가능한 나이 시작
     private int minAge;
+
     //가능한 나이 끝
     private int maxAge;
+
     @Enumerated(EnumType.STRING)
     private PublicAccess publicAccess;
+
     private int timeRequired;
+
     private int points;
+
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private RewardStatus rewardStatus = RewardStatus.NO_REWARD;
