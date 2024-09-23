@@ -4,6 +4,7 @@ import com.pnu.sursim.domain.survey.dto.*;
 import com.pnu.sursim.domain.survey.entity.*;
 import com.pnu.sursim.domain.survey.repository.*;
 import com.pnu.sursim.domain.survey.util.SurveyFactory;
+import com.pnu.sursim.domain.user.dto.AuthUser;
 import com.pnu.sursim.domain.user.entity.User;
 import com.pnu.sursim.domain.user.repository.UserRepository;
 import com.pnu.sursim.global.exception.CustomException;
@@ -132,8 +133,7 @@ public class SurveyService {
 
     //id기준으로 서부이세부정보까지 반환 반환
     public SpecSurveyResponse getSpecSurveysById(long surveyId) {
-        Survey targetSurvey = surveyRepository.findById(surveyId)
-                .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST));
+        Survey targetSurvey = findSurveyOrThrow(surveyId);
 
         List<QuestionResponse> questionResponseList = completeQuestionResponseList(targetSurvey);
 
@@ -145,10 +145,6 @@ public class SurveyService {
                 .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_NO_REWARDS));
         return SurveyFactory.makeSurveyWithRewardResponse(targetSurvey, questionResponseList, reward);
 
-    }
-
-
-    public void saveSurveyResponse(SurveyAnswerRequest surveyAnswerRequest) {
     }
 
 
@@ -164,6 +160,11 @@ public class SurveyService {
     private User findUserOrThrow(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
+    }
+
+    public Survey findSurveyOrThrow(Long surveyId){
+       return surveyRepository.findById(surveyId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST));
     }
 
 
