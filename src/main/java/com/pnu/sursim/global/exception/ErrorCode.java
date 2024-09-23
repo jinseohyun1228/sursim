@@ -30,6 +30,9 @@ public enum ErrorCode {
 
     //이미지업로드 중 오류
     ERROR_UPLOADING_IMAGE(HttpStatus.BAD_REQUEST, "An error occurred while uploading s3. Please contact the developer."),
+
+    //설문조사에 응답 과정 중 에러
+    SURVEY_CONSENT_REQUIRED(HttpStatus.BAD_REQUEST,"Surveys require consent.")
     ;
 
     private final HttpStatus httpStatus;
