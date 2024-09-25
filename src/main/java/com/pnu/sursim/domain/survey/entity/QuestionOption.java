@@ -19,7 +19,6 @@ public class QuestionOption {   //객관식응답(단일선택)
 
     private String text;
 
-
     @ManyToOne
     @JoinColumn(name = "question_id")
     private Question question;
