@@ -51,7 +51,7 @@ public class AnswerRequestList {
     }
 
     // 문항 ID로 문항을 반환하는 메서드
-    public AnswerRequest getAnswerByIdOrThrow(Question question) {
+    public AnswerRequest getAnswerById(Question question) {
         return Optional.ofNullable(answerRequestHashMap.get(question.getId()))
                 .orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND ));
     }
