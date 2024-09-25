@@ -15,7 +15,7 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class SurveyAnswerRequest {
-    private List<QuestionAnswerRequest> questionAnswerList;
+    private List<AnswerRequest> questionAnswerList;
     private ConsentStatus consentStatus;
 
 }
