@@ -23,7 +23,7 @@ public class AnswerRequest {
     private Scale scale;                      //척도
     private String text;                        //문항 텍스트
     private String phoneNumber  ;               //전화번호
-    private List<Integer> checkList;            //체크리스트
+    private List<Integer> checkNumberList;            //체크리스트
 
     public boolean validQuestionType(Question question) {
         return this.questionType == question.getQuestionType();
