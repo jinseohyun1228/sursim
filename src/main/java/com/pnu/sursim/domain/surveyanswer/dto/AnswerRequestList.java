@@ -53,7 +53,7 @@ public class AnswerRequestList {
     // 문항 ID로 문항을 반환하는 메서드
     public AnswerRequest getAnswerById(Question question) {
         return Optional.ofNullable(answerRequestHashMap.get(question.getId()))
-                .orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND ));
+                .orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
     }
 
     public AnswerRequestList validateAnswers(List<Question> questionList) {
@@ -73,6 +73,11 @@ public class AnswerRequestList {
             throw new CustomException(ErrorCode.MULTIPLE_INCORRECT_QUESTIONS );
         }
         return this;
+    }
+
+
+    public boolean isOptionalAndNotExist(Question question) {
+        return (!answerRequestHashMap.containsKey(question.getId())) && (question.getRequiredOption() == RequiredOption.OPTIONAL);
     }
 
 }
