@@ -16,30 +16,38 @@ import java.util.Objects;
 @NoArgsConstructor
 public class User {
 
-    public int reward;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     //이름
     @Column(nullable = false)
     private String name;
+
     //이메일
     @Column(nullable = false, unique = true)
     private String email;
+
     //비밀번호
     @Column(nullable = false)
     private String password;
+
     //생년월일
     @Column(name = "birth_date")
     private LocalDate birthDate;
+
     //성별
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
     //지역
     @Enumerated(EnumType.STRING)
     private Region region;
+
     @Enumerated(EnumType.STRING)
     private UserInfoStatus userInfoStatus;
+
+    private int point;
 
     public User(JoinRequest joinRequest) {
         this.name = joinRequest.name();
@@ -49,7 +57,7 @@ public class User {
         this.gender = joinRequest.gender();
         this.region = joinRequest.region();
         this.userInfoStatus = UserInfoStatus.fromUser(this);
-        this.reward = 0;
+        this.point = 0;
     }
 
     public User(KakaoUser kakaoUser) {
@@ -57,7 +65,11 @@ public class User {
         this.email = kakaoUser.email();
         this.password = kakaoUser.password();
         this.userInfoStatus = UserInfoStatus.fromUser(this);
-        this.reward = 0;
+        this.point = 0;
+    }
+
+    public void accumulatePoint(int point) {
+        this.point += point;
     }
 
     public void updateProfile(ProfileRequest profileRequest) {
