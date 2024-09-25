@@ -23,6 +23,6 @@ public class DescriptiveAnswer { //긴 응답
     private Question question;
 
     @Lob
-    private String text;
+    private String value;
     
 }
