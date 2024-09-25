@@ -1,6 +1,7 @@
 package com.pnu.sursim.domain.surveyanswer.entity;
 
 import com.pnu.sursim.domain.survey.entity.Question;
+import com.pnu.sursim.domain.survey.entity.QuestionOption;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,8 +13,7 @@ import javax.validation.constraints.Min;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class SemanticAnswer {
-
+public class OptionsAnswer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,6 +22,9 @@ public class SemanticAnswer {
     @JoinColumn(name ="survey_answer_id")
     private SurveyAnswer surveyAnswer;
 
+    @ManyToOne
+    @JoinColumn(name ="option_id")
+    private QuestionOption questionOption;
 
     @ManyToOne
     @JoinColumn(name = "question_id")
@@ -30,4 +33,5 @@ public class SemanticAnswer {
     @Min(1)
     @Max(5)
     private int value;
+
 }

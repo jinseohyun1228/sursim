@@ -9,7 +9,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class DescriptiveAnswer {
+public class DescriptiveAnswer { //긴 응답
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

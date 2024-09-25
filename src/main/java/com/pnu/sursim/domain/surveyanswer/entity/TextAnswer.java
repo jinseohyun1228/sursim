@@ -4,15 +4,12 @@ import com.pnu.sursim.domain.survey.entity.Question;
 import jakarta.persistence.*;
 import lombok.*;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-
 @Getter
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class LikertAnswer {
+public class TextAnswer { // 주관식, 핸드폰 번호, 숫자(일단 숫자도 이걸로)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,8 +22,5 @@ public class LikertAnswer {
     @JoinColumn(name = "question_id")
     private Question question;
 
-    @Min(1)
-    @Max(5)
-    private int value;
-
+    private String value;
 }

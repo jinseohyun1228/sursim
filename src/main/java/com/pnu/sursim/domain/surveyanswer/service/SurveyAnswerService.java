@@ -1,11 +1,14 @@
 package com.pnu.sursim.domain.surveyanswer.service;
 
-import com.pnu.sursim.domain.surveyanswer.dto.QuestionAnswerResponse;
+import com.pnu.sursim.domain.survey.entity.Question;
+import com.pnu.sursim.domain.surveyanswer.dto.QuestionAnswerRequest;
 import com.pnu.sursim.domain.survey.dto.QuestionList;
 import com.pnu.sursim.domain.surveyanswer.dto.SurveyAnswerRequest;
 import com.pnu.sursim.domain.survey.entity.Survey;
+import com.pnu.sursim.domain.surveyanswer.entity.CheckAnswer;
 import com.pnu.sursim.domain.surveyanswer.entity.SurveyAnswer;
 import com.pnu.sursim.domain.survey.repository.*;
+import com.pnu.sursim.domain.surveyanswer.repository.SurveyAnswerRepository;
 import com.pnu.sursim.domain.user.entity.User;
 import com.pnu.sursim.domain.user.repository.UserRepository;
 import com.pnu.sursim.global.exception.CustomException;
@@ -53,11 +56,20 @@ public class SurveyAnswerService {
         QuestionList questionList = new QuestionList(questionRepository.findAllBySurveyIdOrderByIndexAsc(targetSurvey.getId()));
 
         //응답자의 문항 요청
-        List<QuestionAnswerResponse> answerRequestList = surveyAnswerRequest.getQuestionAnswerList();
+        List<QuestionAnswerRequest> answerRequestList = surveyAnswerRequest.getQuestionAnswerList();
 
         //문항만들기
         answerRequestList.forEach(
-                questionAnswerResponse -> {
+                answerResponse -> {
+                    Question targetQuestion = questionList.getQuestionById(answerResponse.getId());
+
+                    //체크 박스
+
+                    //객관식인 경우
+
+                    //일반 string 응답들
+
+                    //서술형인 경우
 
                 }
         );
@@ -75,5 +87,9 @@ public class SurveyAnswerService {
                 .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST));
     }
 
+
+    private CheckAnswer completeAnswer(Survey survey, Question question, QuestionAnswerRequest questionAnswerRequest) {
+
+    }
 
 }

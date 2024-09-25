@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class QuestionAnswerResponse {
+public class QuestionAnswerRequest {
     private Long id;                            //문항 아이디
     private QuestionType questionType;          //문항 타입
     private Integer optionNumber;               //문항 번호

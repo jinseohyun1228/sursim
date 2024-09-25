@@ -35,7 +35,4 @@ public class SurveyAnswer {
     @Enumerated(EnumType.STRING)
     private ConsentStatus consentStatus;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "question_answer")
-    private List<QuestionAnswer> questionAnswerList = new ArrayList<>();
 }
