@@ -34,7 +34,10 @@ public enum ErrorCode {
 
     //설문조사에 응답 과정 중 에러
     SURVEY_CONSENT_REQUIRED(HttpStatus.BAD_REQUEST,"Surveys require consent."),
-    QUESTION_NOT_FOUND(HttpStatus.BAD_REQUEST,"The question cannot be found.");
+    QUESTION_NOT_FOUND(HttpStatus.BAD_REQUEST,"The question cannot be found."),
+    INCORRECT_SURVEY_ANSWER(HttpStatus.BAD_REQUEST,"Required response is missing."),
+    INCORRECT_QUESTION_TYPE(HttpStatus.BAD_REQUEST,"The question type of the response is incorrect."),
+    MULTIPLE_INCORRECT_QUESTIONS(HttpStatus.BAD_REQUEST,"The user's response is incorrect." );
 
     private final HttpStatus httpStatus;
     private final String errorMessage;
