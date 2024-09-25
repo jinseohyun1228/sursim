@@ -30,8 +30,4 @@ public class ScaleAnswer {
     @JoinColumn(name = "question_id")
     private Question question;
 
-    @Min(1)
-    @Max(5)
-    private int value;
-
 }
