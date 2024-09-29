@@ -22,7 +22,7 @@ public class AnswerRequestList {
                         answerRequest -> answerRequest,                                     //값은 오브젝트 자체
                         // 중복된 키가 있을 경우 예외 발생
                         (existing, replacement) -> {
-                            throw new CustomException(ErrorCode.INCORRECT_QUESTION );
+                            throw new CustomException(ErrorCode.INCORRECT_QUESTION);
                         },
                         // 결과를 HashMap으로 수집
                         HashMap::new
@@ -39,13 +39,13 @@ public class AnswerRequestList {
 
         //해당 응답이 존재하지 않고, 필수인 경우 -> 에러 발생
         if ((!answerRequestHashMap.containsKey(question.getId())) && (question.getRequiredOption() == RequiredOption.REQUIRED)) {
-            throw new CustomException(ErrorCode.INCORRECT_QUESTION );
+            throw new CustomException(ErrorCode.INCORRECT_QUESTION);
         }
 
         //question기준으로 적절한 응답값찾기
         AnswerRequest answerRequest = answerRequestHashMap.get(question.getId());
-        if (!answerRequest.validQuestionType(question)){
-            throw new CustomException(ErrorCode.INCORRECT_QUESTION );
+        if (!answerRequest.validQuestionType(question)) {
+            throw new CustomException(ErrorCode.INCORRECT_QUESTION);
         }
 
     }
@@ -70,7 +70,7 @@ public class AnswerRequestList {
 
         if (!errors.isEmpty()) {
             // 에러 목록을 하나의 예외로 묶어 던지기
-            throw new CustomException(ErrorCode.MULTIPLE_INCORRECT_QUESTIONS );
+            throw new CustomException(ErrorCode.MULTIPLE_INCORRECT_QUESTIONS);
         }
         return this;
     }

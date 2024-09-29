@@ -4,7 +4,6 @@ import com.pnu.sursim.domain.survey.dto.*;
 import com.pnu.sursim.domain.survey.entity.*;
 import com.pnu.sursim.domain.survey.repository.*;
 import com.pnu.sursim.domain.survey.util.SurveyFactory;
-import com.pnu.sursim.domain.user.dto.AuthUser;
 import com.pnu.sursim.domain.user.entity.User;
 import com.pnu.sursim.domain.user.repository.UserRepository;
 import com.pnu.sursim.global.exception.CustomException;
@@ -165,8 +164,8 @@ public class SurveyService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
     }
 
-    public Survey findSurveyOrThrow(Long surveyId){
-       return surveyRepository.findById(surveyId)
+    public Survey findSurveyOrThrow(Long surveyId) {
+        return surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST));
     }
 

@@ -117,7 +117,7 @@ public class SurveyAnswerService {
         answeringUser.accumulatePoint(targetSurvey.getPoints());
     }
 
-    private QuestionOption getQuestionOptionByIndexOrThrow(Long questionId,int index) {
+    private QuestionOption getQuestionOptionByIndexOrThrow(Long questionId, int index) {
         return questionOptionRepository.findByQuestionIdAndIndex(questionId, index)
                 .orElseThrow(() -> new CustomException(ErrorCode.INCORRECT_OPTIONS_ANSWER));
     }

@@ -16,11 +16,11 @@ public class OptionsAnswer {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name ="survey_answer_id")
+    @JoinColumn(name = "survey_answer_id")
     private SurveyAnswer surveyAnswer;
 
     @ManyToOne
-    @JoinColumn(name ="option_id")
+    @JoinColumn(name = "option_id")
     private QuestionOption questionOption;
 
     @ManyToOne

@@ -15,7 +15,7 @@ public class DescriptiveAnswer { //긴 응답
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name ="survey_answer_id")
+    @JoinColumn(name = "survey_answer_id")
     private SurveyAnswer surveyAnswer;
 
     @ManyToOne
@@ -24,5 +24,5 @@ public class DescriptiveAnswer { //긴 응답
 
     @Lob
     private String value;
-    
+
 }

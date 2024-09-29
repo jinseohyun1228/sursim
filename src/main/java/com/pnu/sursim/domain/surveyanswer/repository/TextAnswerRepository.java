@@ -1,6 +1,5 @@
 package com.pnu.sursim.domain.surveyanswer.repository;
 
-import com.pnu.sursim.domain.surveyanswer.entity.SurveyAnswer;
 import com.pnu.sursim.domain.surveyanswer.entity.TextAnswer;
 import org.springframework.data.jpa.repository.JpaRepository;
 

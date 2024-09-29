@@ -27,19 +27,19 @@ public enum ErrorCode {
     SURVEY_DOES_NOT_EXIST(HttpStatus.BAD_REQUEST, "There is no survey matching that ID value."),
     INCORRECT_CHOICE_QUESTION(HttpStatus.BAD_REQUEST, "An error occurred in the CHOICE_QUESTION. This may be a wrong survey. Please contact the developer."),
     INCORRECT_SEMANTIC_QUESTIONS(HttpStatus.BAD_REQUEST, "An error occurred in the SEMANTIC_QUESTIONS. This may be a wrong survey. Please contact the developer."),
-    INCORRECT_QUESTION(HttpStatus.BAD_REQUEST,"There was a problem with the survey questions. Please contact the administrator."),
+    INCORRECT_QUESTION(HttpStatus.BAD_REQUEST, "There was a problem with the survey questions. Please contact the administrator."),
 
     //이미지업로드 중 오류
     ERROR_UPLOADING_IMAGE(HttpStatus.BAD_REQUEST, "An error occurred while uploading s3. Please contact the developer."),
 
     //설문조사에 응답 과정 중 에러
-    SURVEY_CONSENT_REQUIRED(HttpStatus.BAD_REQUEST,"Surveys require consent."),
-    QUESTION_NOT_FOUND(HttpStatus.BAD_REQUEST,"The question cannot be found."),
-    INCORRECT_SURVEY_ANSWER(HttpStatus.BAD_REQUEST,"Required response is missing."),
-    INCORRECT_QUESTION_TYPE(HttpStatus.BAD_REQUEST,"The question type of the response is incorrect."),
-    MULTIPLE_INCORRECT_QUESTIONS(HttpStatus.BAD_REQUEST,"The user's response is incorrect." ),
+    SURVEY_CONSENT_REQUIRED(HttpStatus.BAD_REQUEST, "Surveys require consent."),
+    QUESTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "The question cannot be found."),
+    INCORRECT_SURVEY_ANSWER(HttpStatus.BAD_REQUEST, "Required response is missing."),
+    INCORRECT_QUESTION_TYPE(HttpStatus.BAD_REQUEST, "The question type of the response is incorrect."),
+    MULTIPLE_INCORRECT_QUESTIONS(HttpStatus.BAD_REQUEST, "The user's response is incorrect."),
 
-    INCORRECT_OPTIONS_ANSWER(HttpStatus.BAD_REQUEST,"There is no option matching the \"index\" value of the option responded by the user."),
+    INCORRECT_OPTIONS_ANSWER(HttpStatus.BAD_REQUEST, "There is no option matching the \"index\" value of the option responded by the user."),
 
     ;
 

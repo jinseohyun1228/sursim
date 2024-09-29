@@ -15,7 +15,7 @@ public class TextAnswer { // 주관식, 핸드폰 번호, 숫자(일단 숫자�
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name ="survey_answer_id")
+    @JoinColumn(name = "survey_answer_id")
     private SurveyAnswer surveyAnswer;
 
     @ManyToOne
