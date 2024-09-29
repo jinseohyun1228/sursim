@@ -1,7 +1,10 @@
 package com.pnu.sursim.global.auth.util;
 
 import jakarta.servlet.http.Cookie;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CookieUtil {
 
     public static String Authorization = "Authorization";

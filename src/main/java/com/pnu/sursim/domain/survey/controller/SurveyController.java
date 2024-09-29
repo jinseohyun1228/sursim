@@ -6,6 +6,8 @@ import com.pnu.sursim.domain.survey.dto.SurveyRequest;
 import com.pnu.sursim.domain.survey.dto.SurveyResponse;
 import com.pnu.sursim.domain.survey.entity.RewardType;
 import com.pnu.sursim.domain.survey.service.SurveyService;
+import com.pnu.sursim.domain.surveyanswer.dto.SurveyAnswerRequest;
+import com.pnu.sursim.domain.surveyanswer.service.SurveyAnswerService;
 import com.pnu.sursim.domain.user.dto.AuthUser;
 import com.pnu.sursim.global.auth.resolver.SessionUser;
 import com.pnu.sursim.global.response.CustomPage;
@@ -26,6 +28,7 @@ import java.util.Map;
 public class SurveyController {
 
     private final SurveyService surveyService;
+    private final SurveyAnswerService surveyAnswerService;
 
     @PostMapping("/surveys")
     public CustomResponse createSurvey(@SessionUser AuthUser authUser, @RequestBody SurveyRequest surveyRequest) {
@@ -79,8 +82,15 @@ public class SurveyController {
     //id기준 서베이 조회
     @GetMapping("/surveys/{id}")
     public CustomResponse addReward(@SessionUser AuthUser authUser, @PathVariable("id") long surveyId) {
-        SpecSurveyResponse SpecSurveyResponse = surveyService.getSurveysById(surveyId);
+        SpecSurveyResponse SpecSurveyResponse = surveyService.getSpecSurveysById(surveyId);
         return CustomResponse.success(SpecSurveyResponse);
+    }
+
+    //서베이 응답하기 POST /surveys/{surveyId}/responses
+    @PostMapping("/surveys/{id}/responses")
+    public CustomResponse submitSurveyAnswer(@PathVariable("id") long surveyId, @SessionUser AuthUser authUser, @RequestBody SurveyAnswerRequest surveyAnswerRequest) {
+        surveyAnswerService.saveSurveyAnswer(authUser.getEmail(), surveyId, surveyAnswerRequest);
+        return CustomResponse.success("The user's response has been successfully saved.");
     }
 
 

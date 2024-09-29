@@ -66,8 +66,8 @@ public class SurveyService {
         //id기준 내림차순으로 정렬될 수 있도록 PageRequest생성
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
 
-        //내림차순으로 정렬된 PageRequest를 사용하여 서베이 조회
-        Page<Survey> surveys = surveyRepository.findAll(pageRequest);
+        // 마감일자가 지나지 않은 서베이 조회
+        Page<Survey> surveys = surveyRepository.findAllByDueDateAfter(pageRequest);
 
         return completeSurveyPage(surveys, pageRequest);
     }
@@ -119,7 +119,7 @@ public class SurveyService {
         Survey targetSurvey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST))
                 .validateAddReward()
-                .validateCreator(creator);
+                .verifySurveyCreator(creator);
 
         //이미지 업로드
         String rewardImg = s3Service.uploadImg(rewardFile);
@@ -130,34 +130,31 @@ public class SurveyService {
 
     }
 
+    //id기준으로 서부이세부정보까지 반환 반환
+    public SpecSurveyResponse getSpecSurveysById(long surveyId) {
+        Survey targetSurvey = findSurveyOrThrow(surveyId);
 
-    public SpecSurveyResponse getSurveysById(long surveyId) {
-        Survey targetSurvey = surveyRepository.findById(surveyId)
-                .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST));
-        return completeSurvey(targetSurvey);
+        List<QuestionResponse> questionResponseList = completeQuestionResponseList(targetSurvey);
 
-    }
-
-    private SpecSurveyResponse completeSurvey(Survey survey) {
-
-        List<QuestionResponse> questionResponseList = completeQuestionResponseList(survey);
-
-        if (!survey.hasReward()) { //리워드가 없는 경우
-            return SurveyFactory.makeSpecSurveyResponse(survey, questionResponseList);
+        //리워드가 없는 경우
+        if (!targetSurvey.hasReward()) {
+            return SurveyFactory.makeSpecSurveyResponse(targetSurvey, questionResponseList);
         }
 
-        Reward reward = rewardRepository.findBySurveyId(survey.getId())
+        //리워드가 있는 경우
+        Reward reward = rewardRepository.findBySurveyId(targetSurvey.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_NO_REWARDS));
-        return SurveyFactory.makeSurveyWithRewardResponse(survey, questionResponseList, reward);
+
+        return SurveyFactory.makeSurveyWithRewardResponse(targetSurvey, questionResponseList, reward);
 
     }
 
 
     //서베이 조회 페이지 객체를 만드는 부분
     private Page<SurveyResponse> completeSurveyPage(Page<Survey> surveys, Pageable pageable) {
-        List<SurveyResponse> surveyResponsRecodes = surveys.getContent().stream()
+        List<SurveyResponse> surveyResponseRecodes = surveys.getContent().stream()
                 .map(SurveyFactory::makeSurveyResponse).collect(Collectors.toList());
-        return new PageImpl<>(surveyResponsRecodes, pageable, surveys.getTotalElements());
+        return new PageImpl<>(surveyResponseRecodes, pageable, surveys.getTotalElements());
     }
 
 
@@ -167,7 +164,13 @@ public class SurveyService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
     }
 
+    public Survey findSurveyOrThrow(Long surveyId) {
+        return surveyRepository.findById(surveyId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST));
+    }
 
+
+    //서베이의 문항 정보를 만드는 부분
     public List<QuestionResponse> completeQuestionResponseList(Survey survey) {
         return questionRepository.findAllBySurveyIdOrderByIndexAsc(survey.getId())
                 .stream()
@@ -193,4 +196,5 @@ public class SurveyService {
                 })
                 .collect(Collectors.toList());
     }
+
 }

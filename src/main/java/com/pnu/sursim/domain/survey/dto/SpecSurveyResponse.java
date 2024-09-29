@@ -2,6 +2,7 @@ package com.pnu.sursim.domain.survey.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.pnu.sursim.domain.survey.entity.Consent;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,9 @@ public class SpecSurveyResponse extends SurveyResponse {
                                       String collectedData,
                                       String retentionPeriod,
                                       String contactInfo) {
+        public ConsentInfoResponse(Consent consent) {
+            this(consent.getCollectionPurpose(), consent.getCollectedData(), consent.getRetentionPeriod(), consent.getContactInfo());
+        }
     }
 
 }
