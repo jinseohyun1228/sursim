@@ -22,6 +22,11 @@ public class SurveyFactory {
         int minAge = Optional.ofNullable(surveyRequest.minAge()).orElse(0);
         int maxAge = Optional.ofNullable(surveyRequest.maxAge()).orElse(Integer.MAX_VALUE);
 
+        Consent consent = Consent.builder().collectionPurpose(surveyRequest.consentInfo().collectionPurpose())
+                .collectedData(surveyRequest.consentInfo().collectedData())
+                .retentionPeriod(surveyRequest.consentInfo().retentionPeriod())
+                .contactInfo(surveyRequest.consentInfo().contactInfo()).build();
+
         return Survey.builder()
                 .title(surveyRequest.title())
                 .creator(creator)
@@ -34,10 +39,7 @@ public class SurveyFactory {
                 .maxAge(maxAge)
                 .gender(surveyRequest.gender())
                 .ageGroup(ageGroup)
-                .collectionPurpose(surveyRequest.consentInfo().collectionPurpose())
-                .collectedData(surveyRequest.consentInfo().collectedData())
-                .retentionPeriod(surveyRequest.consentInfo().retentionPeriod())
-                .contactInfo(surveyRequest.consentInfo().contactInfo())
+                .consent(consent)
                 .build();
     }
 
@@ -128,7 +130,7 @@ public class SurveyFactory {
                 .timeRequired(survey.getTimeRequired())
                 .points(survey.getPoints())
                 .questionList(questionResponses)
-                .consentInfo(new SpecSurveyResponse.ConsentInfoResponse(survey.getCollectionPurpose(), survey.getCollectedData(), survey.getRetentionPeriod(), survey.getContactInfo()))
+                .consentInfo(new SpecSurveyResponse.ConsentInfoResponse(survey.getConsent()))
                 .reward(new SurveyWithRewardResponse.RewardResponse(reward.getTitle(), reward.getRewardType(), reward.getCount(), reward.getRewardImg()))
                 .build();
     }
@@ -149,7 +151,7 @@ public class SurveyFactory {
                 .timeRequired(survey.getTimeRequired())
                 .points(survey.getPoints())
                 .questionList(questionResponses)
-                .consentInfo(new SpecSurveyResponse.ConsentInfoResponse(survey.getCollectionPurpose(), survey.getCollectedData(), survey.getRetentionPeriod(), survey.getContactInfo()))
+                .consentInfo(new SpecSurveyResponse.ConsentInfoResponse(survey.getConsent()))
                 .build();
     }
 
