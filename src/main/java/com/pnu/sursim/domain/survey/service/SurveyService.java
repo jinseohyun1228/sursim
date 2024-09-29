@@ -119,7 +119,7 @@ public class SurveyService {
         Survey targetSurvey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST))
                 .validateAddReward()
-                .validateCreator(creator);
+                .verifySurveyCreator(creator);
 
         //이미지 업로드
         String rewardImg = s3Service.uploadImg(rewardFile);
