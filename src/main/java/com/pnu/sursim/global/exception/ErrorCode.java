@@ -33,6 +33,9 @@ public enum ErrorCode {
     ERROR_UPLOADING_IMAGE(HttpStatus.BAD_REQUEST, "An error occurred while uploading s3. Please contact the developer."),
 
     //설문조사에 응답 과정 중 에러
+    SURVEY_AGE_AND_USER_AGE_DO_NOT_MATCH(HttpStatus.BAD_REQUEST, "Users cannot respond to the survey. The age does not match."),
+    SURVEY_GENDER_AND_USER_GENDER_DO_NOT_MATCH(HttpStatus.BAD_REQUEST, "Users cannot respond to the survey. The gender does not match."),
+    SURVEY_ANSWER_EXISTS(HttpStatus.BAD_REQUEST, "This question has already been answered. You cannot respond twice"),
     SURVEY_CONSENT_REQUIRED(HttpStatus.BAD_REQUEST, "Surveys require consent."),
     QUESTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "The question cannot be found."),
     INCORRECT_SURVEY_ANSWER(HttpStatus.BAD_REQUEST, "Required response is missing."),
