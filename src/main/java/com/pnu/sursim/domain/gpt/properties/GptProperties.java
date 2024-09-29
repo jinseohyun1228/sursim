@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record GptProperties(
         String secretKey,
+        String model,
         String modelUrl,
         String modelListUrl,
         String promptUrl) {
