@@ -41,9 +41,10 @@ public enum ErrorCode {
     INCORRECT_SURVEY_ANSWER(HttpStatus.BAD_REQUEST, "Required response is missing."),
     INCORRECT_QUESTION_TYPE(HttpStatus.BAD_REQUEST, "The question type of the response is incorrect."),
     MULTIPLE_INCORRECT_QUESTIONS(HttpStatus.BAD_REQUEST, "The user's response is incorrect."),
-
     INCORRECT_OPTIONS_ANSWER(HttpStatus.BAD_REQUEST, "There is no option matching the \"index\" value of the option responded by the user."),
 
+    //get
+    GPT_ERROR(HttpStatus.BAD_REQUEST,"An error occurred while requesting gpt."),
     ;
 
     private final HttpStatus httpStatus;

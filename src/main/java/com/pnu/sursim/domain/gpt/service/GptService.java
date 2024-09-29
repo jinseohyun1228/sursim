@@ -1,71 +1,56 @@
 package com.pnu.sursim.domain.gpt.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pnu.sursim.domain.gpt.dto.PromptRequest;
+import com.pnu.sursim.domain.gpt.dto.GPTResponse;
+import com.pnu.sursim.domain.gpt.dto.QuestionForGpt;
+import com.pnu.sursim.domain.gpt.dto.QuestionPrompt;
 import com.pnu.sursim.domain.gpt.properties.GptProperties;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
+import com.pnu.sursim.domain.gpt.util.MessageTemplate;
+import com.pnu.sursim.global.exception.CustomException;
+import com.pnu.sursim.global.exception.ErrorCode;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
+
 public class GptService {
 
-    private final GptProperties gptProperties;
-
-    // 모델 사용 가능 여부 확인하기
-    public Map<String, Object> isValidModel(String modelName) {
-        Map<String, Object> result = new HashMap<>();
-
-        //토큰 정보를 포함한 Header를 가져옵니다.
-        HttpHeaders headers = httpHeaders();
-
-        // [STEP2] 통신을 위한 RestTemplate을 구성합니다.
-        ResponseEntity<String> response = new RestTemplate()
-                .exchange(gptProperties.modelListUrl() + "/" + modelName, HttpMethod.GET, new HttpEntity<>(headers), String.class);
-        try {
-            // [STEP3] Jackson을 기반으로 응답값을 가져옵니다.
-            ObjectMapper om = new ObjectMapper();
-            result = om.readValue(response.getBody(), new TypeReference<>() {
-            });
-        } catch (Exception e) {
-            System.out.println("e = " + e);
-        }
-        return result;
+    public GptService(GptProperties gptProperties) {
+        this.gptProperties = gptProperties;
+        this.restClient = RestClient.create();
     }
+
+    private final GptProperties gptProperties;
+    private final RestClient restClient;
 
 
     //gpt 물어보기
-    public Map<String, Object> prompt(PromptRequest promptRequest) {
+    public String helpQuestion(QuestionForGpt questionRequest) {
 
-        Map<String, Object> resultMap = new HashMap<>();
+        String questionInfo = MessageTemplate.explanationToQuestion(questionRequest).toString();
+        QuestionPrompt questionPrompt = MessageTemplate.makePrompt(gptProperties.model(), questionInfo);
 
+        System.out.println("questionPrompt = " + questionPrompt);
         //통신을 위한 RestTemplate을 구성합니다.
-        HttpEntity<PromptRequest> requestEntity = new HttpEntity<>(promptRequest, httpHeaders());
 
-        System.out.println("requestEntity = " + requestEntity);
+        GPTResponse gptResponse = restClient.post()
+                .uri(gptProperties.promptUrl())
+                .header("Authorization", "Bearer " + gptProperties.secretKey())
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(questionPrompt)
+                .retrieve()
+                .toEntity(GPTResponse.class)
+                .getBody();
 
-        ResponseEntity<String> response = new RestTemplate()
-                .exchange(gptProperties.promptUrl(), HttpMethod.POST, requestEntity, String.class);
-        try {
-            ObjectMapper om = new ObjectMapper();
-            resultMap = om.readValue(response.getBody(), new TypeReference<>() {
-            });
-        } catch (Exception e) {
-            System.out.println("e = " + e);
+        if (gptResponse == null) {
+            throw new CustomException(ErrorCode.GPT_ERROR); // 커스텀 예외 사용
         }
-        return resultMap;
+
+        return gptResponse.getResponse();
+
     }
 
-    private HttpHeaders httpHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(gptProperties.secretKey());
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return headers;
-    }
+
 }

@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.List;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record PromptRequest(String model,
-                            List<ChatRequestMsgDto> messages) {
+public record QuestionPrompt(String model,
+                             List<ChatRequestMsgDto> messages) {
 
-    record ChatRequestMsgDto(String role,
-                             String content) {
+    public record ChatRequestMsgDto(String role,
+                                    String content) {
     }
 }

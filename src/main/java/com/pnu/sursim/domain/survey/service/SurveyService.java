@@ -16,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 @Service
 @RequiredArgsConstructor
@@ -42,16 +40,21 @@ public class SurveyService {
 
         //문항을 만드는 부분
         surveyRequest.questionList().forEach(questionRequest -> {
+
             // Question 객체 생성 & 데이터베이스에 Question 저장
             Question savedQuestion = questionRepository.save(SurveyFactory.makeQuestion(questionRequest, savedSurvey));
+            QuestionType questionType = savedQuestion.getQuestionType();
+
 
             // 체크박스거나 객관식인 경우 추가로 문항 저장하기
-            if ((savedQuestion.getQuestionType() == QuestionType.CHECK_CHOICE) || (savedQuestion.getQuestionType() == QuestionType.MULTIPLE_CHOICE)) {
-                questionRequest.questionOption().forEach(questionOptionRequest -> questionOptionRepository.save(SurveyFactory.makeOption(questionOptionRequest, savedQuestion)));
+            if ((questionType == QuestionType.CHECK_CHOICE) || (questionType == QuestionType.MULTIPLE_CHOICE)) {
+                questionRequest.questionOption().
+                        forEach(
+                                questionOptionRequest -> questionOptionRepository.save(SurveyFactory.makeOption(questionOptionRequest, savedQuestion)));
             }
 
             // 의미 분별 척도인 경우
-            if (savedQuestion.getQuestionType() == QuestionType.SEMANTIC_RATINGS) {
+            if (questionType == QuestionType.SEMANTIC_RATINGS) {
                 semanticOptionRepository.save(SurveyFactory.makeSemantic(questionRequest.semanticOption(), savedQuestion));
             }
 
@@ -153,7 +156,7 @@ public class SurveyService {
     //서베이 조회 페이지 객체를 만드는 부분
     private Page<SurveyResponse> completeSurveyPage(Page<Survey> surveys, Pageable pageable) {
         List<SurveyResponse> surveyResponseRecodes = surveys.getContent().stream()
-                .map(SurveyFactory::makeSurveyResponse).collect(Collectors.toList());
+                .map(SurveyFactory::makeSurveyResponse).toList();
         return new PageImpl<>(surveyResponseRecodes, pageable, surveys.getTotalElements());
     }
 
@@ -194,7 +197,7 @@ public class SurveyService {
                     //일반 문항 -> QuestionResponse
                     return SurveyFactory.makeQuestionResponse(question);
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }

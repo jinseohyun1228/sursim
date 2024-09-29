@@ -43,7 +43,7 @@ public class SurveyFactory {
                 .build();
     }
 
-    public static Question makeQuestion(SurveyRequest.QuestionRequest questionRequest, Survey survey) {
+    public static Question makeQuestion(QuestionRequest questionRequest, Survey survey) {
         return Question.builder()
                 .text(questionRequest.text())
                 .questionType(questionRequest.questionType())
@@ -53,7 +53,7 @@ public class SurveyFactory {
                 .build();
     }
 
-    public static QuestionOption makeOption(SurveyRequest.QuestionRequest.QuestionOptionRequest questionOptionRequest, Question question) {
+    public static QuestionOption makeOption(QuestionRequest.QuestionOptionRequest questionOptionRequest, Question question) {
         return QuestionOption.builder()
                 .index(questionOptionRequest.index())
                 .text(questionOptionRequest.text())
@@ -61,7 +61,7 @@ public class SurveyFactory {
                 .build();
     }
 
-    public static SemanticOption makeSemantic(SurveyRequest.QuestionRequest.SemanticOptionRequest semanticOptionRequest, Question question) {
+    public static SemanticOption makeSemantic(QuestionRequest.SemanticOptionRequest semanticOptionRequest, Question question) {
         return SemanticOption.builder()
                 .leftEnd(semanticOptionRequest.leftEnd())
                 .rightEnd(semanticOptionRequest.rightEnd())
@@ -171,6 +171,7 @@ public class SurveyFactory {
                 .points(survey.getPoints())
                 .build();
     }
+
 
 
 }
