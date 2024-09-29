@@ -114,4 +114,9 @@ public class User {
     public int hashCode() {
         return Objects.hash(id, email);
     }
+
+    public int getUserAge() {
+        return  LocalDate.now().getYear() - this.getBirthDate().getYear();
+    }
+
 }
