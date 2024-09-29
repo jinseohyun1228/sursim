@@ -42,21 +42,18 @@ public class SurveyAnswerService {
     //유저의 서베이 응답 정보를 저장함
     @Transactional
     public void saveSurveyAnswer(String email, long surveyId, SurveyAnswerRequest surveyAnswerRequest) {
-        //동의가 필요함
-        if (!surveyAnswerRequest.getConsentStatus().isAgreed()) {
-            throw new CustomException(ErrorCode.SURVEY_CONSENT_REQUIRED);
-        }
+        validateSurveyAnswerRequest(surveyAnswerRequest);
 
-        // 유저와 설문 조사 엔티티 가져오기
         User answeringUser = findUserOrThrow(email);
         Survey targetSurvey = findSurveyOrThrow(surveyId);
-        LocalDate writtenDate = LocalDate.now();
 
+        validateAnswerEligibility(answeringUser, targetSurvey);
+        validateFirstResponse(answeringUser, targetSurvey);
 
         //응답 저장하기
         SurveyAnswer savedSurveyAnswer = surveyAnswerRepository.save(SurveyAnswer.builder()
                 .answeringUser(answeringUser)
-                .writtenDate(writtenDate)
+                .writtenDate(LocalDate.now())
                 .survey(targetSurvey)
                 .consentStatus(surveyAnswerRequest.getConsentStatus())
                 .build());
@@ -65,56 +62,64 @@ public class SurveyAnswerService {
         List<Question> questionList = questionRepository.findAllBySurveyIdOrderByIndexAsc(targetSurvey.getId());
 
         //응답자의 응답 리스트 생성 + 유효성 판단
-        AnswerRequestList validAnswerRequestList = new AnswerRequestList(surveyAnswerRequest.getQuestionAnswerList()).validateAnswers(questionList);
+        AnswerRequestList validAnswerRequestList = new AnswerRequestList(surveyAnswerRequest.getQuestionAnswerList())
+                .validateAnswers(questionList);
 
         // 각 문항에 대해 응답을 매핑하고 저장 처리
+        saveAllAnswers(savedSurveyAnswer, questionList, validAnswerRequestList);
+
+        // 유저 포인트 누적
+        answeringUser.accumulatePoint(targetSurvey.getPoints());
+    }
+
+    private void saveAllAnswers(SurveyAnswer savedSurveyAnswer, List<Question> questionList, AnswerRequestList validAnswerRequestList) {
         questionList.forEach(question -> {
-            // 응답을 가져와서 문항에 매핑 (유효성 검사는 이미 validateAnswers에서 처리됨)
             if (validAnswerRequestList.isOptionalAndNotExist(question)) {
                 return;
             }
 
             AnswerRequest answerRequest = validAnswerRequestList.getAnswerById(question);
-
-            //존재하지 않지만 선택인 경우는 넘어가도록 처리
-
-            //체크 응답인 경우
-            if (answerRequest.getQuestionType() == QuestionType.CHECK_CHOICE) {
-                List<Integer> checkList = answerRequest.getCheckNumberList();
-
-                checkList.forEach(
-                        index -> {
-                            QuestionOption questionOption = getQuestionOptionByIndexOrThrow(question.getId(), index);
-                            optionsAnswerRepository.save(AnswerFactory.makeOptionsAnswer(savedSurveyAnswer, question, questionOption, index));
-                        }
-
-                );
-            }
-
-            //객관식인 경우
-            if (answerRequest.getQuestionType() == QuestionType.MULTIPLE_CHOICE) {
-                QuestionOption questionOption = getQuestionOptionByIndexOrThrow(question.getId(), answerRequest.getOptionNumber());
-                optionsAnswerRepository.save(AnswerFactory.makeOptionsAnswer(savedSurveyAnswer, question, questionOption, answerRequest.getOptionNumber()));
-            }
-
-
-            //의미분별척도나, 리커트척도인 경우
-            if ((answerRequest.getQuestionType() == QuestionType.LIKERT_SCORES) || (answerRequest.getQuestionType() == QuestionType.SEMANTIC_RATINGS)) {
-                scaleAnswerRepository.save(AnswerFactory.makeScaleAnswer(savedSurveyAnswer, question, answerRequest.getScale()));
-            }
-
-            //텍스트 응답인 경우 (전화번호,숫자응답,주관식)
-            if ((answerRequest.getQuestionType() == QuestionType.PHONE_NUMBER) || (answerRequest.getQuestionType() == QuestionType.NUMERIC_RESPONSE) || (answerRequest.getQuestionType() == QuestionType.SUBJECTIVE)) {
-                textAnswerRepository.save(AnswerFactory.makeTextAnswer(savedSurveyAnswer, question, answerRequest.getText()));
-            }
-
-            //서술형인 경우
-            if (answerRequest.getQuestionType() == QuestionType.DESCRIPTIVE) {
-                descriptiveAnswerRepository.save(AnswerFactory.makeDescriptiveAnswer(savedSurveyAnswer, question, answerRequest.getText()));
-            }
+            saveAnswerByQuestionType(savedSurveyAnswer, question, answerRequest);
         });
+    }
 
-        answeringUser.accumulatePoint(targetSurvey.getPoints());
+    private void saveAnswerByQuestionType(SurveyAnswer savedSurveyAnswer, Question question, AnswerRequest answerRequest) {
+        QuestionType answerQuestionType = answerRequest.getQuestionType();
+
+        //체크 응답인 경우
+        if (answerQuestionType == QuestionType.CHECK_CHOICE) {
+            List<Integer> checkList = answerRequest.getCheckNumberList();
+
+            checkList.forEach(
+                    index -> {
+                        QuestionOption questionOption = getQuestionOptionByIndexOrThrow(question.getId(), index);
+                        optionsAnswerRepository.save(AnswerFactory.makeOptionsAnswer(savedSurveyAnswer, question, questionOption, index));
+                    }
+            );
+        }
+
+        //객관식인 경우
+        if (answerQuestionType == QuestionType.MULTIPLE_CHOICE) {
+            QuestionOption questionOption = getQuestionOptionByIndexOrThrow(question.getId(), answerRequest.getOptionNumber());
+            optionsAnswerRepository.save(AnswerFactory.makeOptionsAnswer(savedSurveyAnswer, question, questionOption, answerRequest.getOptionNumber()));
+        }
+
+        //의미분별척도나, 리커트척도인 경우
+        if ((answerQuestionType == QuestionType.LIKERT_SCORES) || (answerQuestionType == QuestionType.SEMANTIC_RATINGS)) {
+            scaleAnswerRepository.save(AnswerFactory.makeScaleAnswer(savedSurveyAnswer, question, answerRequest.getScale()));
+        }
+
+        //텍스트 응답인 경우 (전화번호,숫자응답,주관식)
+        if ((answerQuestionType == QuestionType.PHONE_NUMBER) || (answerQuestionType == QuestionType.NUMERIC_RESPONSE) || (answerQuestionType == QuestionType.SUBJECTIVE)) {
+            textAnswerRepository.save(AnswerFactory.makeTextAnswer(savedSurveyAnswer, question, answerRequest.getText()));
+        }
+
+        //서술형인 경우
+        if (answerQuestionType == QuestionType.DESCRIPTIVE) {
+            descriptiveAnswerRepository.save(AnswerFactory.makeDescriptiveAnswer(savedSurveyAnswer, question, answerRequest.getText()));
+        }
+
+
     }
 
     private QuestionOption getQuestionOptionByIndexOrThrow(Long questionId, int index) {
@@ -128,8 +133,34 @@ public class SurveyAnswerService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
     }
 
-    public Survey findSurveyOrThrow(Long surveyId) {
+    private Survey findSurveyOrThrow(Long surveyId) {
         return surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST));
     }
+
+    private void validateAnswerEligibility(User user, Survey survey) {
+        //성별검사
+        if (!survey.matchesAgeCriteria(user.getUserAge())) {
+            throw new CustomException(ErrorCode.SURVEY_GENDER_AND_USER_GENDER_DO_NOT_MATCH);
+        }
+
+        if (!survey.matchesGenderCriteria(user.getGender())) {
+            throw new CustomException(ErrorCode.SURVEY_GENDER_AND_USER_GENDER_DO_NOT_MATCH);
+
+        }
+    }
+
+    private void validateFirstResponse(User user, Survey survey) {
+        if (surveyAnswerRepository.existsBySurveyIdAndAnsweringUserId(survey.getId(), user.getId())) {
+            throw new CustomException(ErrorCode.SURVEY_ANSWER_EXISTS);
+        }
+    }
+
+    private void validateSurveyAnswerRequest(SurveyAnswerRequest surveyAnswerRequest) {
+        if (!surveyAnswerRequest.getConsentStatus().isAgreed()) {
+            throw new CustomException(ErrorCode.SURVEY_CONSENT_REQUIRED);
+        }
+    }
+
 }
+
