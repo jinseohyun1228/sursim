@@ -66,8 +66,8 @@ public class SurveyService {
         //id기준 내림차순으로 정렬될 수 있도록 PageRequest생성
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
 
-        //내림차순으로 정렬된 PageRequest를 사용하여 서베이 조회
-        Page<Survey> surveys = surveyRepository.findAll(pageRequest);
+        // 마감일자가 지나지 않은 서베이 조회
+        Page<Survey> surveys = surveyRepository.findAllByDueDateAfter(pageRequest);
 
         return completeSurveyPage(surveys, pageRequest);
     }
