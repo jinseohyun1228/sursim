@@ -2,6 +2,7 @@ package com.pnu.sursim.domain.user.controller;
 
 import com.pnu.sursim.domain.user.dto.AuthUser;
 import com.pnu.sursim.domain.user.dto.ProfileRequest;
+import com.pnu.sursim.domain.user.dto.ProfileResponse;
 import com.pnu.sursim.domain.user.dto.UserVo;
 import com.pnu.sursim.domain.user.service.UserService;
 import com.pnu.sursim.global.auth.resolver.SessionUser;
@@ -19,8 +20,8 @@ public class UserController {
 
     @GetMapping("/user/profile")
     public CustomResponse getUserInfo(@SessionUser AuthUser user) {
-        UserVo userVo = userService.getUserInfo(user);
-        return CustomResponse.success(userVo);
+        ProfileResponse profileResponse = userService.getUserInfo(user);
+        return CustomResponse.success(profileResponse);
     }
 
 
