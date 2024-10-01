@@ -26,8 +26,8 @@ public class UserController {
 
     @PatchMapping("/user/profile")
     public CustomResponse changeProfile(@SessionUser AuthUser user, @RequestBody ProfileRequest profileRequest) {
-        UserVo userVo = userService.changeProfile(user, profileRequest);
-        return CustomResponse.success(userVo);
+        userService.changeProfile(user, profileRequest);
+        return CustomResponse.success("successfully changed your profile.");
     }
 
 }

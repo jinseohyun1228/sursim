@@ -22,13 +22,11 @@ public class UserService {
         return new UserVo(user);
     }
 
-    public UserVo changeProfile(AuthUser authUser, ProfileRequest profileRequest) {
+    public void changeProfile(AuthUser authUser, ProfileRequest profileRequest) {
         User user = userRepository.findByEmail(authUser.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
 
         user.updateProfile(profileRequest);
-        User savedUser = userRepository.save(user);
-
-        return new UserVo(savedUser);
+        userRepository.save(user);
     }
 }
