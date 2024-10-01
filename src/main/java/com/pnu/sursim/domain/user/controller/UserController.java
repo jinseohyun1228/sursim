@@ -10,6 +10,9 @@ import com.pnu.sursim.global.response.CustomResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +32,15 @@ public class UserController {
     public CustomResponse changeProfile(@SessionUser AuthUser user, @RequestBody ProfileRequest profileRequest) {
         userService.changeProfile(user, profileRequest);
         return CustomResponse.success("successfully changed your profile.");
+    }
+
+    @GetMapping("/user/point")
+    public CustomResponse getUserPoint(@SessionUser AuthUser user) {
+        Map<String, Integer> map = new HashMap<>();
+        int point = userService.getUserPoint(user);
+
+        map.put("point", point);
+        return CustomResponse.success(map);
     }
 
 }

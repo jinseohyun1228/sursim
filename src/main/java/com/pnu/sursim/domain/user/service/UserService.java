@@ -17,16 +17,26 @@ public class UserService {
     private final UserRepository userRepository;
 
     public ProfileResponse getUserInfo(AuthUser authUser) {
-        User user = userRepository.findByEmail(authUser.getEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
+        User user = getUserOrThrow(authUser.getEmail());
         return new ProfileResponse(user);
     }
 
     public void changeProfile(AuthUser authUser, ProfileRequest profileRequest) {
-        User user = userRepository.findByEmail(authUser.getEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
-
+        User user = getUserOrThrow(authUser.getEmail());
         user.updateProfile(profileRequest);
         userRepository.save(user);
     }
+
+    public int getUserPoint(AuthUser authUser) {
+        User user = getUserOrThrow(authUser.getEmail());
+        return user.getPoint();
+    }
+
+    private User getUserOrThrow(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
+
+    }
+
+
 }
