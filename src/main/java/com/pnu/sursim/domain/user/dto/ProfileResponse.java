@@ -4,23 +4,24 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.pnu.sursim.domain.user.entity.Gender;
 import com.pnu.sursim.domain.user.entity.Region;
+import com.pnu.sursim.domain.user.entity.User;
 
 import java.time.LocalDate;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record ProfileResponse(String name,
                               String email,
-                              String password,
                               LocalDate birthDate,
-                              Gender gender) {
+                              Gender gender,
+                              int point) {
 
-    public ProfileResponse(UserVo user) {
+    public ProfileResponse(User user) {
         this(
                 user.getName(),
                 user.getEmail(),
-                user.getPassword(),
                 user.getBirthDate(),
-                user.getGender()
+                user.getGender(),
+                user.getPoint()
         );
     }
 }
