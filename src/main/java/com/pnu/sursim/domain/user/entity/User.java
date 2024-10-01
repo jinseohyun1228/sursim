@@ -40,10 +40,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    //지역
-    @Enumerated(EnumType.STRING)
-    private Region region;
-
     @Enumerated(EnumType.STRING)
     private UserInfoStatus userInfoStatus;
 
@@ -55,7 +51,6 @@ public class User {
         this.password = joinRequest.password();
         this.birthDate = joinRequest.birthDate();
         this.gender = joinRequest.gender();
-        this.region = joinRequest.region();
         this.userInfoStatus = UserInfoStatus.fromUser(this);
         this.point = 0;
     }
@@ -88,18 +83,12 @@ public class User {
             this.gender = profileRequest.gender();
         }
 
-        // 지역 업데이트
-        if (profileRequest.existRegion()) {
-            this.region = profileRequest.region();
-        }
-
     }
 
-    public void registerUserInfoFirst(LocalDate localDate, Gender gender, Region region) {
+    public void registerUserInfoFirst(LocalDate localDate, Gender gender) {
         this.birthDate = localDate;
         this.gender = gender;
-        this.region = region;
-        this.userInfoStatus = UserInfoStatus.fromUser(this);
+        this.userInfoStatus = UserInfoStatus.COMPLETE;
     }
 
     @Override
