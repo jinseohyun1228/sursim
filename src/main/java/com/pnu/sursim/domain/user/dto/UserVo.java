@@ -19,7 +19,6 @@ public class UserVo {
     private String password;
     private LocalDate birthDate;
     private Gender gender;
-    private Region region;
 
     public UserVo(User user) {
         this.id = user.getId();
@@ -28,7 +27,6 @@ public class UserVo {
         this.password = user.getPassword();
         this.birthDate = user.getBirthDate();
         this.gender = user.getGender();
-        this.region = user.getRegion();
     }
 
 }

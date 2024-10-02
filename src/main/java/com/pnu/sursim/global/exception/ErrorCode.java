@@ -29,6 +29,8 @@ public enum ErrorCode {
     INCORRECT_SEMANTIC_QUESTIONS(HttpStatus.BAD_REQUEST, "An error occurred in the SEMANTIC_QUESTIONS. This may be a wrong survey. Please contact the developer."),
     INCORRECT_QUESTION(HttpStatus.BAD_REQUEST, "There was a problem with the survey questions. Please contact the administrator."),
 
+    REWARD_REQUEST_INVALID(HttpStatus.BAD_REQUEST,"The reward request value is invalid."),
+
     //이미지업로드 중 오류
     ERROR_UPLOADING_IMAGE(HttpStatus.BAD_REQUEST, "An error occurred while uploading s3. Please contact the developer."),
 
