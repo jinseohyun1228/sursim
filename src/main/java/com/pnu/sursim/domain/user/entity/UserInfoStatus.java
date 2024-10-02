@@ -7,8 +7,7 @@ public enum UserInfoStatus {
     public static UserInfoStatus fromUser(User user) {
         // 필드들이 모두 null이 아닌지 확인
         if (user.getBirthDate() != null &&
-                user.getGender() != null &&
-                user.getRegion() != null) {
+                user.getGender() != null ) {
             return COMPLETE;
         } else {
             return INCOMPLETE;

@@ -3,7 +3,6 @@ package com.pnu.sursim.domain.user.dto;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.pnu.sursim.domain.user.entity.Gender;
-import com.pnu.sursim.domain.user.entity.Region;
 
 import java.time.LocalDate;
 
@@ -12,8 +11,7 @@ public record JoinRequest(String name,
                           String email,
                           String password,
                           LocalDate birthDate,
-                          Gender gender,
-                          Region region) {
+                          Gender gender) {
 
 //    public JoinRequest {
 //        // 이름 검증
