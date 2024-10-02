@@ -4,12 +4,13 @@ import com.pnu.sursim.domain.survey.dto.RewardRequest;
 import com.pnu.sursim.domain.survey.dto.SpecSurveyResponse;
 import com.pnu.sursim.domain.survey.dto.SurveyRequest;
 import com.pnu.sursim.domain.survey.dto.SurveyResponse;
-import com.pnu.sursim.domain.survey.entity.RewardType;
 import com.pnu.sursim.domain.survey.service.SurveyService;
 import com.pnu.sursim.domain.surveyanswer.dto.SurveyAnswerRequest;
 import com.pnu.sursim.domain.surveyanswer.service.SurveyAnswerService;
 import com.pnu.sursim.domain.user.dto.AuthUser;
 import com.pnu.sursim.global.auth.resolver.SessionUser;
+import com.pnu.sursim.global.exception.CustomException;
+import com.pnu.sursim.global.exception.ErrorCode;
 import com.pnu.sursim.global.response.CustomPage;
 import com.pnu.sursim.global.response.CustomResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -30,12 +29,18 @@ public class SurveyController {
     private final SurveyService surveyService;
     private final SurveyAnswerService surveyAnswerService;
 
+    //서베이에 리워드 추가 요청
     @PostMapping("/surveys")
-    public CustomResponse createSurvey(@SessionUser AuthUser authUser, @RequestBody SurveyRequest surveyRequest) {
-        Map<String, Long> responseMap = new HashMap<>();
-        Long id = surveyService.createSurvey(authUser.getEmail(), surveyRequest);
-        responseMap.put("survey_id", id);
-        return CustomResponse.success(responseMap);
+    public CustomResponse createSurvey(@SessionUser AuthUser authUser,
+                                    @RequestPart("survey") SurveyRequest surveyRequest,
+                                    @RequestPart(value = "reward", required = false) RewardRequest rewardRequest,
+                                    @RequestPart(value = "reward_file", required = false) MultipartFile rewardFile){
+        if ((rewardFile == null && rewardRequest != null) || (rewardFile != null && rewardRequest == null)) {
+            throw new CustomException(ErrorCode.REWARD_REQUEST_INVALID);
+        }
+        //둘다 있는 경우..에 넣어야하나?
+        surveyService.createSurvey(authUser.getEmail(), surveyRequest,rewardRequest, rewardFile);
+        return CustomResponse.success("Reward registration has been successfully completed.");
     }
 
     //모든 서베이 페이지 요청
@@ -66,22 +71,10 @@ public class SurveyController {
         return CustomResponse.success(surveyResponseList);
     }
 
-    //서베이에 리워드 추가 요청
-    @PostMapping("/surveys/{id}/reward")
-    public CustomResponse addReward(@SessionUser AuthUser authUser,
-                                    @PathVariable("id") long surveyId,
-                                    @RequestParam("title") String title,
-                                    @RequestParam("reward_type") RewardType rewardType,
-                                    @RequestParam("count") int count,
-                                    @RequestParam("reward_file") MultipartFile rewardFile) { // 파일은 MultipartFile로 받음
-        RewardRequest rewardRequest = new RewardRequest(title, rewardType, count);
-        surveyService.addReward(authUser.getEmail(), surveyId, rewardRequest, rewardFile);
-        return CustomResponse.success("Reward registration has been successfully completed.");
-    }
 
     //id기준 서베이 조회
     @GetMapping("/surveys/{id}")
-    public CustomResponse addReward(@SessionUser AuthUser authUser, @PathVariable("id") long surveyId) {
+    public CustomResponse addReward(@PathVariable("id") long surveyId) {
         SpecSurveyResponse SpecSurveyResponse = surveyService.getSpecSurveysById(surveyId);
         return CustomResponse.success(SpecSurveyResponse);
     }
