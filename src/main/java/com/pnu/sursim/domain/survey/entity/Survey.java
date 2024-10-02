@@ -32,6 +32,7 @@ public class Survey {
     private LocalDate startDate;
 
     //마감날짜
+    @Column(name = "due_date")
     private LocalDate dueDate;
 
     //나이에 대한 응답 자격
