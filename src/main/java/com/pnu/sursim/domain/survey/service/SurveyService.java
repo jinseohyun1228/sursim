@@ -31,7 +31,7 @@ public class SurveyService {
 
     //서베이 등록
     @Transactional
-    public Long createSurvey(String email, SurveyRequest surveyRequest) {
+    public void createSurvey(String email, SurveyRequest surveyRequest, RewardRequest rewardRequest, MultipartFile rewardFile) {
 
         User creator = findUserOrThrow(email);
 
@@ -60,7 +60,17 @@ public class SurveyService {
 
         });
 
-        return savedSurvey.getId();
+        //리워드가 없는 경우
+        if ((rewardRequest == null) || (rewardRequest.isEmpty())) {
+            return;
+        }
+
+        //이미지 업로드
+        String rewardImg = s3Service.uploadImg(rewardFile);
+
+        Reward savedReward = rewardRepository.save(SurveyFactory.makeReward(savedSurvey, rewardRequest, rewardImg));
+
+        savedSurvey.registerReward(savedReward);
 
     }
 
@@ -111,26 +121,6 @@ public class SurveyService {
         Page<Survey> surveys = surveyRepository.findAllByAgeAndGenderAndHasReward(user.getBirthDate(), user.getGender(), top3PageRequest);
 
         return completeSurveyPage(surveys, top3PageRequest).getContent();
-    }
-
-
-    //리워드 등록
-    @Transactional
-    public void addReward(String email, long surveyId, RewardRequest rewardRequest, MultipartFile rewardFile) {
-        User creator = findUserOrThrow(email);
-
-        Survey targetSurvey = surveyRepository.findById(surveyId)
-                .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST))
-                .validateAddReward()
-                .verifySurveyCreator(creator);
-
-        //이미지 업로드
-        String rewardImg = s3Service.uploadImg(rewardFile);
-
-        Reward savedReward = rewardRepository.save(SurveyFactory.makeReward(targetSurvey, rewardRequest, rewardImg));
-
-        targetSurvey.registerReward(savedReward);
-
     }
 
     //id기준으로 서부이세부정보까지 반환 반환
