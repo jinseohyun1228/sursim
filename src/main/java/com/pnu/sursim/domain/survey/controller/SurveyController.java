@@ -25,9 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class SurveyController {
 
     private final SurveyService surveyService;
-    private final SurveyAnswerService surveyAnswerService;
 
-    //서베이에 리워드 추가 요청
+    //서베이 생성 요청 =
     @PostMapping("/surveys")
     public CustomResponse createSurvey(@SessionUser AuthUser authUser,
                                        @RequestPart("survey") SurveyRequest surveyRequest,
@@ -38,7 +37,7 @@ public class SurveyController {
         }
 
         surveyService.createSurvey(authUser.getEmail(), surveyRequest, rewardRequest, rewardFile);
-        return CustomResponse.success("Reward registration has been successfully completed.");
+        return CustomResponse.success("Survey has been created successfully.");
     }
 
     //서베이 페이지 요청
