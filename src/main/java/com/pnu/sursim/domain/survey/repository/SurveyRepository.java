@@ -28,21 +28,7 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
     Page<Survey> findAllByAgeAndGenderAndHasReward(LocalDate birthDate, Gender gender, Pageable pageable);
 
 
-    //마감일자가 끝나지 않은 서베이 조회
     @Query("SELECT s FROM Survey s WHERE s.dueDate >= CURRENT_DATE")
     Page<Survey> findAllByDueDateAfter(Pageable pageable);
-
-    //마감일자가 끝나지 않은 서베이 중에서 리워드를 가진 것만 조회
-    @Query("SELECT s FROM Survey s WHERE " +
-            "s.rewardStatus = com.pnu.sursim.domain.survey.entity.RewardStatus.HAS_REWARD AND " +
-            "s.dueDate >= CURRENT_DATE")
-    Page<Survey> findAllByDueDateAfterAndHasReward(Pageable pageable);
-
-
-    Page<Survey> findAllByCreatorId(Long id, Pageable pageable);
-
-    @Query("SELECT s FROM Survey s WHERE s.publicAccess = com.pnu.sursim.domain.survey.entity.PublicAccess.SHARED " +
-            "AND s.dueDate < CURRENT_DATE")
-    Page<Survey> findAllPublicSurveysWithExpiredDueDate(Pageable pageable);
 
 }
