@@ -44,7 +44,8 @@ public enum ErrorCode {
     INCORRECT_SURVEY_ANSWER(HttpStatus.BAD_REQUEST, "필수 응답이 누락되었습니다.", "SR014"),
     INCORRECT_QUESTION_TYPE(HttpStatus.BAD_REQUEST, "응답의 질문 유형이 올바르지 않습니다.", "SR015"),
     MULTIPLE_INCORRECT_QUESTIONS(HttpStatus.BAD_REQUEST, "사용자의 응답이 잘못되었습니다.", "SR016"),
-    INCORRECT_OPTIONS_ANSWER(HttpStatus.BAD_REQUEST, "사용자가 응답한 옵션의 \"index\" 값과 일치하는 옵션이 없습니다.", "SR017"),
+    INCORRECT_OPTIONS_ANSWER(HttpStatus.BAD_REQUEST, "사용자가 응답한 옵션의 `index` 값과 일치하는 옵션이 없습니다.", "SR017"),
+    SURVEY_RESULTS_ARE_PROTECTED(HttpStatus.BAD_REQUEST, "해당 서베이의 결과는 작성자만 볼 수 있습니다.", "SR018"),
 
     //GPT 관련 에러
     GPT_ERROR(HttpStatus.BAD_REQUEST, "GPT 요청 중 오류가 발생했습니다.", "GP001");
