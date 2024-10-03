@@ -1,7 +1,7 @@
 package com.pnu.sursim.domain.surveyanswer.controller;
 
-import com.pnu.sursim.domain.survey.service.SurveyService;
 import com.pnu.sursim.domain.surveyanswer.dto.SurveyAnswerRequest;
+import com.pnu.sursim.domain.surveyanswer.dto.SurveyResult;
 import com.pnu.sursim.domain.surveyanswer.service.SurveyAnswerService;
 import com.pnu.sursim.domain.user.dto.AuthUser;
 import com.pnu.sursim.global.auth.resolver.SessionUser;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class SurveyAnswerController {
 
-    private final SurveyService surveyService;
     private final SurveyAnswerService surveyAnswerService;
 
 
@@ -26,4 +25,9 @@ public class SurveyAnswerController {
     }
 
 
+    @GetMapping("/surveys/{id}/responses")
+    public CustomResponse getSurveyAnswer(@PathVariable("id") long surveyId, @SessionUser AuthUser authUser) {
+        SurveyResult surveyResult = surveyAnswerService.getSurveyResult(authUser.getEmail(), surveyId);
+        return CustomResponse.success(surveyResult);
+    }
 }
