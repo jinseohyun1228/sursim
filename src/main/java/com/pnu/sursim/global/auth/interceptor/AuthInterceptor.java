@@ -29,7 +29,8 @@ public class AuthInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
 
         if (cookies == null) {
-            return true;
+            response.sendRedirect("/api/login/kakao");
+            throw new CustomException(ErrorCode.TOKEN_EMPTY);
         }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("Authorization")) {
@@ -38,7 +39,8 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         if (authorization == null) {
-            return true;
+            response.sendRedirect("/api/login/kakao");
+            throw new CustomException(ErrorCode.TOKEN_EXPIRED);
         }
 
         String token = authorization;

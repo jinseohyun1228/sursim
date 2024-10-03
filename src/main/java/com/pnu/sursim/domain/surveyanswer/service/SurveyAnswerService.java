@@ -1,10 +1,15 @@
 package com.pnu.sursim.domain.surveyanswer.service;
 
-import com.pnu.sursim.domain.survey.entity.*;
+import com.pnu.sursim.domain.survey.entity.Question;
+import com.pnu.sursim.domain.survey.entity.QuestionOption;
+import com.pnu.sursim.domain.survey.entity.QuestionType;
+import com.pnu.sursim.domain.survey.entity.Survey;
 import com.pnu.sursim.domain.survey.repository.QuestionOptionRepository;
 import com.pnu.sursim.domain.survey.repository.QuestionRepository;
 import com.pnu.sursim.domain.survey.repository.SurveyRepository;
-import com.pnu.sursim.domain.surveyanswer.dto.*;
+import com.pnu.sursim.domain.surveyanswer.dto.AnswerRequest;
+import com.pnu.sursim.domain.surveyanswer.dto.AnswerRequestList;
+import com.pnu.sursim.domain.surveyanswer.dto.SurveyAnswerRequest;
 import com.pnu.sursim.domain.surveyanswer.entity.SurveyAnswer;
 import com.pnu.sursim.domain.surveyanswer.repository.*;
 import com.pnu.sursim.domain.surveyanswer.util.AnswerFactory;
@@ -17,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,71 +39,13 @@ public class SurveyAnswerService {
     private final QuestionOptionRepository questionOptionRepository;
 
 
-    public SurveyResult getSurveyResult(String email, long surveyId) {
-        User user = getUserOrThrow(email);
-        Survey targetSurvey = getSurveyOrThrow(surveyId);
-
-        if ( !targetSurvey.isShared() && !validateCreatorOfSurvey(user, targetSurvey)) {
-            throw new CustomException(ErrorCode.SURVEY_RESULTS_ARE_PROTECTED);
-        }
-
-        List<QuestionResult> questionResults = completeQuestionResultList(targetSurvey);
-
-        return new SurveyResult(targetSurvey, surveyAnswerRepository.countBySurvey(targetSurvey), questionResults);
-
-    }
-
-    private List<QuestionResult> completeQuestionResultList(Survey survey) {
-
-        return questionRepository.findAllBySurveyIdOrderByIndexAsc(survey.getId())
-                .stream()
-                .map(question -> {
-                    QuestionType questionType = question.getQuestionType();
-                    //문항의 타입이 단일/체크 경우 ChoiceQuestionResponse 반환
-                    if ((questionType == QuestionType.CHECK_CHOICE) || (questionType == QuestionType.MULTIPLE_CHOICE)) {
-                        //각 옵션
-                        List<OptionResult> optionResultList = questionOptionRepository.findAllByQuestionIdOrderByIndexAsc(question.getId())
-                                .stream()
-                                .map(questionOption -> new OptionResult(questionOption, optionsAnswerRepository.countByQuestionOption(questionOption)))
-                                .toList();
-
-                        return new OptionQuestionResult(question, optionsAnswerRepository.countByQuestion(question), optionResultList);
-                    }
-
-                    //문항 타입이 의미판별인 경우 변경 -> SemanticQuestionResponse
-                    if (questionType == QuestionType.SEMANTIC_RATINGS || questionType == QuestionType.LIKERT_SCORES) {
-                        List<OptionResult> optionResultList = new ArrayList<>();
-
-                        optionResultList.add(new OptionResult(Scale.ONE, scaleAnswerRepository.countByQuestionAndScale(question,Scale.ONE)));
-                        optionResultList.add(new OptionResult(Scale.TWO, scaleAnswerRepository.countByQuestionAndScale(question,Scale.TWO)));
-                        optionResultList.add(new OptionResult(Scale.THREE, scaleAnswerRepository.countByQuestionAndScale(question,Scale.THREE)));
-                        optionResultList.add(new OptionResult(Scale.FOUR, scaleAnswerRepository.countByQuestionAndScale(question,Scale.FOUR)));
-                        optionResultList.add(new OptionResult(Scale.FIVE, scaleAnswerRepository.countByQuestionAndScale(question,Scale.FIVE)));
-
-                        return new OptionQuestionResult(question, scaleAnswerRepository.countByQuestion(question), optionResultList);
-                    }
-
-                    if (questionType == QuestionType.DESCRIPTIVE) {
-                        return new QuestionResult(question, descriptiveAnswerRepository.countByQuestion(question));
-                    }
-                    //일반 문항 -> QuestionResponse
-                    return new QuestionResult(question, textAnswerRepository.countByQuestion(question));
-                })
-                .toList();
-    }
-
-    private boolean validateCreatorOfSurvey(User user, Survey targetSurvey) {
-        return targetSurvey.getCreator().equals(user);
-    }
-
-
     //유저의 서베이 응답 정보를 저장함
     @Transactional
     public void saveSurveyAnswer(String email, long surveyId, SurveyAnswerRequest surveyAnswerRequest) {
         validateSurveyAnswerRequest(surveyAnswerRequest);
 
-        User answeringUser = getUserOrThrow(email);
-        Survey targetSurvey = getSurveyOrThrow(surveyId);
+        User answeringUser = findUserOrThrow(email);
+        Survey targetSurvey = findSurveyOrThrow(surveyId);
 
         validateAnswerEligibility(answeringUser, targetSurvey);
         validateFirstResponse(answeringUser, targetSurvey);
@@ -182,17 +128,17 @@ public class SurveyAnswerService {
     }
 
     //유저의 유효성을 검사하고 예외를 발생시키는 부분
-    private User getUserOrThrow(String email) {
+    private User findUserOrThrow(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
     }
 
-    private Survey getSurveyOrThrow(Long surveyId) {
+    private Survey findSurveyOrThrow(Long surveyId) {
         return surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_DOES_NOT_EXIST));
     }
 
-    private boolean validateAnswerEligibility(User user, Survey survey) {
+    private void validateAnswerEligibility(User user, Survey survey) {
         //성별검사
         if (!survey.matchesAgeCriteria(user.getUserAge())) {
             throw new CustomException(ErrorCode.SURVEY_GENDER_AND_USER_GENDER_DO_NOT_MATCH);
@@ -202,23 +148,19 @@ public class SurveyAnswerService {
             throw new CustomException(ErrorCode.SURVEY_GENDER_AND_USER_GENDER_DO_NOT_MATCH);
 
         }
-        return true;
     }
 
-    private boolean validateFirstResponse(User user, Survey survey) {
+    private void validateFirstResponse(User user, Survey survey) {
         if (surveyAnswerRepository.existsBySurveyIdAndAnsweringUserId(survey.getId(), user.getId())) {
             throw new CustomException(ErrorCode.SURVEY_ANSWER_EXISTS);
         }
-        return true;
     }
 
-    private boolean validateSurveyAnswerRequest(SurveyAnswerRequest surveyAnswerRequest) {
+    private void validateSurveyAnswerRequest(SurveyAnswerRequest surveyAnswerRequest) {
         if (!surveyAnswerRequest.getConsentStatus().isAgreed()) {
             throw new CustomException(ErrorCode.SURVEY_CONSENT_REQUIRED);
         }
-        return true;
     }
-
 
 }
 
