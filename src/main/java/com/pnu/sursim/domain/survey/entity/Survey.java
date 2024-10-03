@@ -117,5 +117,8 @@ public class Survey {
         return (this.gender.equals(Gender.NONE) || this.gender.equals(gender));
     }
 
+    public boolean isShared() {
+        return this.publicAccess == PublicAccess.SHARED;
+    }
 
 }
