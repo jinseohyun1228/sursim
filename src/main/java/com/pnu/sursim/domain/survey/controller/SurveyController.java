@@ -87,12 +87,5 @@ public class SurveyController {
         return CustomResponse.success(SpecSurveyResponse);
     }
 
-    //서베이 응답하기 POST /surveys/{surveyId}/responses
-    @PostMapping("/surveys/{id}/responses")
-    public CustomResponse submitSurveyAnswer(@PathVariable("id") long surveyId, @SessionUser AuthUser authUser, @RequestBody SurveyAnswerRequest surveyAnswerRequest) {
-        surveyAnswerService.saveSurveyAnswer(authUser.getEmail(), surveyId, surveyAnswerRequest);
-        return CustomResponse.success("The user's response has been successfully saved.");
-    }
-
 
 }
