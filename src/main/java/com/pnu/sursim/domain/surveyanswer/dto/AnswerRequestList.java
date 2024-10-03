@@ -70,7 +70,8 @@ public class AnswerRequestList {
 
         if (!errors.isEmpty()) {
             // 에러 목록을 하나의 예외로 묶어 던지기
-            throw new CustomException(ErrorCode.MULTIPLE_INCORRECT_QUESTIONS);
+            String errorMessage = String.join(", ", errors);
+            throw new CustomException(ErrorCode.MULTIPLE_INCORRECT_QUESTIONS,errorMessage);
         }
         return this;
     }

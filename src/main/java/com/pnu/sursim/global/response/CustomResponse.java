@@ -11,24 +11,24 @@ import org.springframework.http.HttpStatus;
 public class CustomResponse {
 
     private HttpStatus httpStatus;
-    private int code;
+    private String code;
     private Object content;
 
-    private CustomResponse(HttpStatus httpStatus, Object content) {
+    private CustomResponse(HttpStatus httpStatus, String code, Object content) {
         this.httpStatus = httpStatus;
-        this.code = httpStatus.value();
+        this.code = code;
         this.content = content;
     }
 
     public static CustomResponse success(Object object) {
-        return new CustomResponse(HttpStatus.OK, object);
+        return new CustomResponse(HttpStatus.OK, "OK001", object);
     }
 
     public static CustomResponse fail(CustomException customException) {
-        return new CustomResponse(customException.getHttpStatus(), customException.getMessage());
+        return new CustomResponse(customException.getHttpStatus(), customException.getCode(), customException.getMessage());
     }
 
     public static CustomResponse fail(Exception exception) {
-        return new CustomResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return new CustomResponse(HttpStatus.BAD_REQUEST,"ER001", exception.getMessage());
     }
 }

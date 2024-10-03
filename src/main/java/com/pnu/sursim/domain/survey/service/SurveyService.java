@@ -76,8 +76,7 @@ public class SurveyService {
 
     //모든 서베이 페이지 조회
     public Page<SurveyResponse> getSurveyPageForAll(Pageable pageable) {
-        //id기준 내림차순으로 정렬될 수 있도록 PageRequest생성
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
+        PageRequest pageRequest = returnPageRequestSortById(pageable);
 
         // 마감일자가 지나지 않은 서베이 조회
         Page<Survey> surveys = surveyRepository.findAllByDueDateAfter(pageRequest);
@@ -87,10 +86,8 @@ public class SurveyService {
 
     //유저에 맞는 서베이 페이지 조회
     public Page<SurveyResponse> getSurveyPageForUser(String email, Pageable pageable) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
-
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
+        User user = findUserOrThrow(email);
+        PageRequest pageRequest = returnPageRequestSortById(pageable);
 
         Page<Survey> surveys = surveyRepository.findAllByAgeAndGender(user.getBirthDate(), user.getGender(), pageRequest);
 
@@ -100,28 +97,46 @@ public class SurveyService {
 
 
     //리워드가 있고 유저에게 맞는 서베이 페이지 조회
-    public Page<SurveyResponse> getSurveyPageForReward(String email, Pageable pageable) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
-
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
+    public Page<SurveyResponse> getSurveyPageHasRewardForUser(String email, Pageable pageable) {
+        User user = findUserOrThrow(email);
+        PageRequest pageRequest = returnPageRequestSortById(pageable);
 
         Page<Survey> surveys = surveyRepository.findAllByAgeAndGenderAndHasReward(user.getBirthDate(), user.getGender(), pageRequest);
         return completeSurveyPage(surveys, pageRequest);
     }
 
-    //리워드가 있고 유저에게 맞는 서베이 3개만 조회
-    public List<SurveyResponse> getSurveysForRewardTop3(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
 
-        //사이즈 3으로 제한하여 PageRequest 생성 (ID 기준 내림차순)
-        Pageable top3PageRequest = PageRequest.of(0, 3, Sort.by("id").descending());
+    public Page<SurveyResponse> getSurveyPageHasRewardForAll(Pageable pageable) {
+        //id기준 내림차순으로 정렬될 수 있도록 PageRequest생성
+        PageRequest pageRequest = returnPageRequestSortById(pageable);
 
-        Page<Survey> surveys = surveyRepository.findAllByAgeAndGenderAndHasReward(user.getBirthDate(), user.getGender(), top3PageRequest);
+        // 마감일자가 지나지 않은 서베이 조회
+        Page<Survey> surveys = surveyRepository.findAllByDueDateAfterAndHasReward(pageRequest);
 
-        return completeSurveyPage(surveys, top3PageRequest).getContent();
+        return completeSurveyPage(surveys, pageRequest);
     }
+
+    //
+    public Page<SurveyResponse> getSurveyPageShared(Pageable pageable) {
+        PageRequest pageRequest = returnPageRequestSortById(pageable);
+
+        Page<Survey> surveys = surveyRepository.findAllPublicSurveysWithExpiredDueDate(pageRequest);
+        return completeSurveyPage(surveys, pageRequest);
+    }
+
+    public Page<SurveyResponse> getSurveyPageMy(String email, Pageable pageable) {
+        User user = findUserOrThrow(email);
+        PageRequest pageRequest = returnPageRequestSortById(pageable);
+
+        Page<Survey> surveys = surveyRepository.findAllByCreatorId(user.getId(),pageRequest);
+
+        return completeSurveyPage(surveys, pageRequest);
+    }
+
+    private PageRequest returnPageRequestSortById(Pageable pageable) {
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
+    }
+
 
     //id기준으로 서부이세부정보까지 반환 반환
     public SpecSurveyResponse getSpecSurveysById(long surveyId) {
