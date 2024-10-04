@@ -32,11 +32,17 @@ public class UserService {
         return user.getPoint();
     }
 
+
+
+    public String getUserPhoneNumber(AuthUser authUser) {
+        User user = getUserOrThrow(authUser.getEmail());
+        return user.getPhoneNumber();
+    }
+
     private User getUserOrThrow(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
 
     }
-
 
 }
