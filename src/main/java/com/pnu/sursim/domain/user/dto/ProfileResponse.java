@@ -13,6 +13,7 @@ public record ProfileResponse(String name,
                               String email,
                               LocalDate birthDate,
                               Gender gender,
+                              String phoneNumber,
                               int point) {
 
     public ProfileResponse(User user) {
@@ -21,6 +22,7 @@ public record ProfileResponse(String name,
                 user.getEmail(),
                 user.getBirthDate(),
                 user.getGender(),
+                user.getPhoneNumber(),
                 user.getPoint()
         );
     }

@@ -43,4 +43,13 @@ public class UserController {
         return CustomResponse.success(map);
     }
 
+    @GetMapping("/user/phone-number")
+    public CustomResponse getUserPhoneNumber(@SessionUser AuthUser user) {
+        Map<String, String> map = new HashMap<>();
+        String phoneNumber = userService.getUserPhoneNumber(user);
+
+        map.put("phone_number", phoneNumber);
+        return CustomResponse.success(map);
+    }
+
 }
