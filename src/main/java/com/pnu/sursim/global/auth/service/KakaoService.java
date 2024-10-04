@@ -89,7 +89,7 @@ public class KakaoService {
         User targetUser = userRepository.findByEmail(authUser.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_ERROR));
 
-        targetUser.registerUserInfoFirst(kakaoFirstInfo.birthDate(), kakaoFirstInfo.gender());
+        targetUser.registerUserInfoFirst(kakaoFirstInfo.birthDate(), kakaoFirstInfo.gender(),kakaoFirstInfo.phoneNumber());
 
         User savedUser = userRepository.save(targetUser);
 
