@@ -9,7 +9,8 @@ import java.time.LocalDate;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record ProfileRequest(String name,
                              LocalDate birthDate,
-                             Gender gender) {
+                             Gender gender,
+                             String phoneNumber) {
 
     public boolean existName() {
         return this.name != null && !this.name.isBlank();
@@ -21,6 +22,10 @@ public record ProfileRequest(String name,
 
     public boolean existGender() {
         return this.gender != null;
+    }
+
+    public boolean existPhoneNumber() {
+        return this.phoneNumber != null;
     }
 
 }

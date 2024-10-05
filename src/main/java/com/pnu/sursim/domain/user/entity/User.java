@@ -43,14 +43,20 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserInfoStatus userInfoStatus;
 
+    //유저의 포인트
     private int point;
 
+    //유저의 핸드폰번호
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     public User(JoinRequest joinRequest) {
-        this.name = joinRequest.name();
-        this.email = joinRequest.email();
-        this.password = joinRequest.password();
-        this.birthDate = joinRequest.birthDate();
+            this.name = joinRequest.name();
+            this.email = joinRequest.email();
+            this.password = joinRequest.password();
+            this.birthDate = joinRequest.birthDate();
         this.gender = joinRequest.gender();
+        this.phoneNumber = joinRequest.phoneNumber();
         this.userInfoStatus = UserInfoStatus.fromUser(this);
         this.point = 0;
     }
@@ -83,11 +89,17 @@ public class User {
             this.gender = profileRequest.gender();
         }
 
+        // 전화번호 업데이트
+        if (profileRequest.existPhoneNumber()) {
+            this.phoneNumber = profileRequest.phoneNumber();
+        }
+
     }
 
-    public void registerUserInfoFirst(LocalDate localDate, Gender gender) {
+    public void registerUserInfoFirst(LocalDate localDate, Gender gender, String phoneNumber) {
         this.birthDate = localDate;
         this.gender = gender;
+        this.phoneNumber = phoneNumber;
         this.userInfoStatus = UserInfoStatus.COMPLETE;
     }
 

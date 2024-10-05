@@ -8,5 +8,6 @@ import java.time.LocalDate;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record KakaoFirstInfo(LocalDate birthDate,
-                             Gender gender) {
+                             Gender gender,
+                             String phoneNumber) {
 }
